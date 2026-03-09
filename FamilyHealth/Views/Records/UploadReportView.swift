@@ -53,6 +53,27 @@ struct UploadReportView: View {
                 }
             }
             .swAlert(isPresented: $showAlert, type: alertType, message: alertMessage)
+            .fileImporter(
+                isPresented: $showFileImporter,
+                allowedContentTypes: [.pdf],
+                allowsMultipleSelection: true
+            ) { result in
+                switch result {
+                case .success(let urls):
+                    for url in urls {
+                        guard url.startAccessingSecurityScopedResource() else { continue }
+                        defer { url.stopAccessingSecurityScopedResource() }
+                        if let data = try? Data(contentsOf: url) {
+                            imageData.append(data)
+                            pdfFileNames.append(url.lastPathComponent)
+                        }
+                    }
+                case .failure(let error):
+                    alertType = .error
+                    alertMessage = "导入失败: \(error.localizedDescription)"
+                    showAlert = true
+                }
+            }
         }
     }
 
@@ -168,27 +189,6 @@ struct UploadReportView: View {
                 .fhPressStyle()
             }
             .padding()
-        }
-        .fileImporter(
-            isPresented: $showFileImporter,
-            allowedContentTypes: [.pdf],
-            allowsMultipleSelection: true
-        ) { result in
-            switch result {
-            case .success(let urls):
-                for url in urls {
-                    guard url.startAccessingSecurityScopedResource() else { continue }
-                    defer { url.stopAccessingSecurityScopedResource() }
-                    if let data = try? Data(contentsOf: url) {
-                        imageData.append(data)
-                        pdfFileNames.append(url.lastPathComponent)
-                    }
-                }
-            case .failure(let error):
-                alertType = .error
-                alertMessage = "导入失败: \(error.localizedDescription)"
-                showAlert = true
-            }
         }
     }
 
