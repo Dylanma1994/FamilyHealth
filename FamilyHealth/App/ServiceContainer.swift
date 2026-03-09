@@ -32,7 +32,8 @@ class ServiceContainer {
             caseService = LocalCaseService(context: ctx)
             familyService = LocalFamilyService(context: ctx)
         case .remote:
-            let api = APIClient(baseURL: appState.serverURL ?? "http://localhost:8080")
+            let url = appState.serverURL.isEmpty ? "http://localhost:8080" : appState.serverURL
+            let api = APIClient(baseURL: url)
             self.apiClient = api
             authService = RemoteAuthService(api: api)
             reportService = RemoteReportService(api: api)

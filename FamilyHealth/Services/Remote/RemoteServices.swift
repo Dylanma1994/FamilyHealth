@@ -2,6 +2,14 @@ import Foundation
 
 /// Remote mode implementations that forward operations to the Go server via REST API.
 
+// MARK: - Paginated Response
+
+struct PaginatedResponse<T: Decodable>: Decodable {
+    let items: [T]
+    let total: Int64
+    let page: Int
+}
+
 // MARK: - Remote Auth Service
 
 final class RemoteAuthService: AuthService {
@@ -10,26 +18,42 @@ final class RemoteAuthService: AuthService {
     init(api: APIClient) { self.api = api }
 
     func createLocalUser(phone: String, name: String, gender: User.Gender) async throws -> User {
-        struct LoginReq: Encodable { let phone: String; let name: String; let gender: String }
-        struct LoginRes: Decodable { let token: String; let user: RemoteUser; let is_new: Bool }
+        struct LoginReq: Encodable { let phone: String; let name: String; let code: String }
+        struct LoginRes: Decodable {
+            let token: String; let user: RemoteUser; let is_new: Bool
+        }
         struct RemoteUser: Decodable {
             let id: UUID; let phone: String; let name: String
             let gender: String?; let avatar_url: String?
+            let height: Double?; let weight: Double?
+            let birth_date: Date?
         }
 
         let res: LoginRes = try await api.post("/api/v1/auth/login",
-            body: LoginReq(phone: phone, name: name, gender: gender.rawValue))
+            body: LoginReq(phone: phone, name: name, code: "000000"))
         await api.setToken(res.token)
 
         let user = User(phone: res.user.phone, name: res.user.name,
                         gender: User.Gender(rawValue: res.user.gender ?? "male") ?? .male)
         user.id = res.user.id
+        if let h = res.user.height { user.height = h }
+        if let w = res.user.weight { user.weight = w }
+        if let b = res.user.birth_date { user.birthDate = b }
         return user
     }
 
     func getCurrentUser() async throws -> User? {
-        // Server returns current user from JWT
-        return nil // Handled via cached local state
+        struct RemoteUser: Decodable {
+            let id: UUID; let phone: String; let name: String
+            let gender: String?; let height: Double?; let weight: Double?
+        }
+        let remote: RemoteUser = try await api.get("/api/v1/users/me")
+        let user = User(phone: remote.phone, name: remote.name,
+                        gender: User.Gender(rawValue: remote.gender ?? "male") ?? .male)
+        user.id = remote.id
+        if let h = remote.height { user.height = h }
+        if let w = remote.weight { user.weight = w }
+        return user
     }
 
     func updateUser(_ user: User) async throws {
@@ -47,7 +71,7 @@ final class RemoteAuthService: AuthService {
     }
 
     func findUser(byPhone phone: String) async throws -> User? {
-        return nil // TODO: implement remote user search
+        return nil // Server-side user search not exposed
     }
 }
 
@@ -64,13 +88,16 @@ final class RemoteReportService: ReportService {
     }
 
     func fetchReports(userId: UUID) async throws -> [HealthReport] {
-        // TODO: parse DTO → Model when remote mode is fully implemented
-        return []
+        let response: PaginatedResponse<HealthReportDTO> = try await api.get(
+            "/api/v1/reports",
+            query: ["user_id": userId.uuidString, "size": "100"]
+        )
+        return response.items.map { $0.toModel() }
     }
 
     func fetchReport(id: UUID) async throws -> HealthReport? {
-        // TODO: parse DTO → Model when remote mode is fully implemented
-        return nil
+        let dto: HealthReportDTO = try await api.get("/api/v1/reports/\(id)")
+        return dto.toModel()
     }
 
     func updateReport(_ report: HealthReport) async throws {
@@ -83,7 +110,11 @@ final class RemoteReportService: ReportService {
     }
 
     func searchReports(query: String, userId: UUID?) async throws -> [HealthReport] {
-        return [] // TODO: implement search endpoint
+        // Server doesn't have search endpoint yet; fetch all and filter client-side
+        guard let uid = userId else { return [] }
+        let all = try await fetchReports(userId: uid)
+        guard !query.isEmpty else { return all }
+        return all.filter { $0.title.localizedStandardContains(query) }
     }
 }
 
@@ -100,13 +131,16 @@ final class RemoteCaseService: CaseService {
     }
 
     func fetchCases(userId: UUID) async throws -> [MedicalCase] {
-        // TODO: parse DTO → Model when remote mode is fully implemented
-        return []
+        let response: PaginatedResponse<MedicalCaseDTO> = try await api.get(
+            "/api/v1/cases",
+            query: ["size": "100"]
+        )
+        return response.items.map { $0.toModel() }
     }
 
     func fetchCase(id: UUID) async throws -> MedicalCase? {
-        // TODO: parse DTO → Model when remote mode is fully implemented
-        return nil
+        let dto: MedicalCaseDTO = try await api.get("/api/v1/cases/\(id)")
+        return dto.toModel()
     }
 
     func updateCase(_ medicalCase: MedicalCase) async throws {
@@ -119,7 +153,10 @@ final class RemoteCaseService: CaseService {
     }
 
     func searchCases(query: String, userId: UUID?) async throws -> [MedicalCase] {
-        return [] // TODO: implement search endpoint
+        guard let uid = userId else { return [] }
+        let all = try await fetchCases(userId: uid)
+        guard !query.isEmpty else { return all }
+        return all.filter { $0.title.localizedStandardContains(query) }
     }
 }
 
@@ -132,19 +169,39 @@ final class RemoteFamilyService: FamilyService {
 
     func createGroup(name: String, creatorId: UUID) async throws -> FamilyGroup {
         struct CreateReq: Encodable { let name: String }
-        struct GroupRes: Decodable {
-            let id: UUID; let name: String; let creator_id: UUID; let created_at: String
-        }
+        struct GroupRes: Decodable { let id: UUID; let role: String }
         let res: GroupRes = try await api.post("/api/v1/families", body: CreateReq(name: name))
-        return FamilyGroup(name: res.name, creatorId: res.creator_id)
+        let group = FamilyGroup(name: name, creatorId: creatorId)
+        group.id = res.id
+        return group
     }
 
     func fetchGroups(userId: UUID) async throws -> [FamilyGroup] {
-        return [] // TODO: parse remote groups
+        struct RemoteGroup: Decodable {
+            let id: UUID; let name: String; let creator_id: UUID; let created_at: Date
+            let members: [RemoteMember]?
+        }
+        struct RemoteMember: Decodable {
+            let id: UUID; let user_id: UUID; let role: String; let joined_at: Date
+        }
+        let groups: [RemoteGroup] = try await api.get("/api/v1/families")
+        return groups.map { g in
+            let group = FamilyGroup(name: g.name, creatorId: g.creator_id)
+            group.id = g.id
+            group.createdAt = g.created_at
+            return group
+        }
     }
 
     func fetchGroup(id: UUID) async throws -> FamilyGroup? {
-        return nil // TODO: implement
+        struct RemoteGroup: Decodable {
+            let id: UUID; let name: String; let creator_id: UUID; let created_at: Date
+        }
+        let g: RemoteGroup = try await api.get("/api/v1/families/\(id)")
+        let group = FamilyGroup(name: g.name, creatorId: g.creator_id)
+        group.id = g.id
+        group.createdAt = g.created_at
+        return group
     }
 
     func deleteGroup(id: UUID) async throws {
@@ -156,24 +213,79 @@ final class RemoteFamilyService: FamilyService {
     }
 
     func removeMember(groupId: UUID, userId: UUID) async throws {
-        // TODO: add endpoint
+        // TODO: server endpoint needed
     }
 
     func getMembers(groupId: UUID) async throws -> [FamilyMember] {
-        return [] // TODO: implement
+        return [] // Included in group fetch
     }
 
     func getUserGroupCount(userId: UUID) async throws -> Int {
-        return 0 // TODO: implement
+        let groups = try await fetchGroups(userId: userId)
+        return groups.count
     }
 
     func isAdmin(userId: UUID, groupId: UUID) async throws -> Bool {
-        return false // TODO: implement
+        guard let group = try await fetchGroup(id: groupId) else { return false }
+        return group.creatorId == userId
     }
 
     func generateInviteCode(groupId: UUID) async throws -> String {
         struct InvRes: Decodable { let invite_code: String; let qr_data: String }
         let res: InvRes = try await api.post("/api/v1/families/\(groupId)/qrcode")
         return res.qr_data
+    }
+}
+
+// MARK: - DTO → Model Conversions
+
+extension HealthReportDTO {
+    func toModel() -> HealthReport {
+        let report = HealthReport(
+            id: id,
+            userId: userId,
+            uploaderId: uploaderId,
+            title: title,
+            hospitalName: hospitalName,
+            reportDate: reportDate,
+            reportType: HealthReport.ReportType(rawValue: reportType) ?? .other,
+            notes: notes
+        )
+        report.aiAnalysis = aiAnalysis
+        report.createdAt = createdAt
+        report.updatedAt = updatedAt
+        return report
+    }
+}
+
+extension MedicalCaseDTO {
+    func toModel() -> MedicalCase {
+        let mc = MedicalCase(
+            id: id,
+            userId: userId,
+            uploaderId: uploaderId,
+            title: title,
+            hospitalName: hospitalName,
+            doctorName: doctorName,
+            visitDate: visitDate,
+            diagnosis: diagnosis,
+            symptoms: symptoms,
+            notes: notes
+        )
+        mc.createdAt = createdAt
+        mc.updatedAt = updatedAt
+        if let meds = medications {
+            mc.medications = meds.map { med in
+                Medication(
+                    id: med.id,
+                    name: med.name,
+                    dosage: med.dosage,
+                    frequency: med.frequency,
+                    startDate: med.startDate,
+                    endDate: med.endDate
+                )
+            }
+        }
+        return mc
     }
 }

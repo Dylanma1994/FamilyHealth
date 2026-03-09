@@ -15,6 +15,18 @@ actor APIClient {
         try? KeychainManager.saveAuthToken(token)
     }
 
+    private let encoder: JSONEncoder = {
+        let e = JSONEncoder()
+        e.dateEncodingStrategy = .iso8601
+        return e
+    }()
+
+    private let decoder: JSONDecoder = {
+        let d = JSONDecoder()
+        d.dateDecodingStrategy = .iso8601
+        return d
+    }()
+
     // MARK: - Execute
 
     func request<T: Decodable>(
@@ -32,7 +44,7 @@ actor APIClient {
         request.httpMethod = method
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         if let token { request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization") }
-        if let body { request.httpBody = try JSONEncoder().encode(body) }
+        if let body { request.httpBody = try encoder.encode(body) }
 
         let (data, response) = try await URLSession.shared.data(for: request)
 
@@ -45,13 +57,13 @@ actor APIClient {
         }
 
         guard (200...299).contains(http.statusCode) else {
-            if let errorBody = try? JSONDecoder().decode(ErrorBody.self, from: data) {
+            if let errorBody = try? decoder.decode(ErrorBody.self, from: data) {
                 throw RemoteError.serverError(errorBody.error)
             }
             throw RemoteError.httpError(http.statusCode)
         }
 
-        return try JSONDecoder().decode(T.self, from: data)
+        return try decoder.decode(T.self, from: data)
     }
 
     func get<T: Decodable>(_ path: String, query: [String: String] = [:]) async throws -> T {
