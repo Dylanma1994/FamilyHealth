@@ -166,29 +166,29 @@ struct UploadReportView: View {
                     .fhShadow(.light)
                 }
                 .fhPressStyle()
-                .fileImporter(
-                    isPresented: $showFileImporter,
-                    allowedContentTypes: [.pdf],
-                    allowsMultipleSelection: true
-                ) { result in
-                    switch result {
-                    case .success(let urls):
-                        for url in urls {
-                            guard url.startAccessingSecurityScopedResource() else { continue }
-                            defer { url.stopAccessingSecurityScopedResource() }
-                            if let data = try? Data(contentsOf: url) {
-                                imageData.append(data)
-                                pdfFileNames.append(url.lastPathComponent)
-                            }
-                        }
-                    case .failure(let error):
-                        alertType = .error
-                        alertMessage = "导入失败: \(error.localizedDescription)"
-                        showAlert = true
-                    }
-                }
             }
             .padding()
+        }
+        .fileImporter(
+            isPresented: $showFileImporter,
+            allowedContentTypes: [.pdf],
+            allowsMultipleSelection: true
+        ) { result in
+            switch result {
+            case .success(let urls):
+                for url in urls {
+                    guard url.startAccessingSecurityScopedResource() else { continue }
+                    defer { url.stopAccessingSecurityScopedResource() }
+                    if let data = try? Data(contentsOf: url) {
+                        imageData.append(data)
+                        pdfFileNames.append(url.lastPathComponent)
+                    }
+                }
+            case .failure(let error):
+                alertType = .error
+                alertMessage = "导入失败: \(error.localizedDescription)"
+                showAlert = true
+            }
         }
     }
 

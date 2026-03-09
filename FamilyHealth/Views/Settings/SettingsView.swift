@@ -540,6 +540,14 @@ struct ProfileEditView: View {
 // MARK: - Language Settings
 
 struct LanguageSettingsView: View {
+    private var currentLanguage: String {
+        Locale.preferredLanguages.first ?? "zh-Hans"
+    }
+
+    private var isChinese: Bool {
+        currentLanguage.hasPrefix("zh")
+    }
+
     var body: some View {
         List {
             Section {
@@ -570,16 +578,34 @@ struct LanguageSettingsView: View {
 
             Section("支持的语言") {
                 HStack {
-                    Text("🇨🇳")
+                    Image(systemName: "character.bubble")
+                        .foregroundStyle(FHColors.primary)
                     Text("简体中文")
                     Spacer()
-                    Image(systemName: "checkmark").foregroundStyle(FHColors.success)
+                    if isChinese {
+                        Text("当前")
+                            .font(.caption)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 2)
+                            .background(FHColors.success)
+                            .clipShape(Capsule())
+                    }
                 }
                 HStack {
-                    Text("🇺🇸")
+                    Image(systemName: "a.circle")
+                        .foregroundStyle(FHColors.info)
                     Text("English")
                     Spacer()
-                    Image(systemName: "checkmark").foregroundStyle(FHColors.success)
+                    if !isChinese {
+                        Text("Active")
+                            .font(.caption)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 2)
+                            .background(FHColors.success)
+                            .clipShape(Capsule())
+                    }
                 }
             }
         }
