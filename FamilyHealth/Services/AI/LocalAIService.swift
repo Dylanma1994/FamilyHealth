@@ -1,5 +1,6 @@
 import Foundation
 import SwiftData
+import NaturalLanguage
 
 /// Local AI service that uses user-configured OpenAI-compatible API
 /// with RAG context from local health data.
@@ -124,12 +125,11 @@ final class LocalAIService: AIServiceProtocol {
             }
         }
 
-        // 2. Simple keyword-based search as fallback (no vector DB in local mode)
+        // 2. Semantic search using NLEmbedding (fallback to keyword search)
         if parts.isEmpty && !query.isEmpty {
-            let reports = try searchReports(query: query)
-            let cases = try searchCases(query: query)
-            parts += reports.prefix(3).map { formatReport($0) }
-            parts += cases.prefix(3).map { formatCase($0) }
+            let (reports, cases) = try semanticSearch(query: query, topK: 3)
+            parts += reports.map { formatReport($0) }
+            parts += cases.map { formatCase($0) }
         }
 
         // 3. If still empty, include recent data overview
@@ -149,6 +149,107 @@ final class LocalAIService: AIServiceProtocol {
         return parts.isEmpty ? "暂无相关健康数据" : parts.joined(separator: "\n\n")
     }
 
+    // MARK: - NLEmbedding Semantic Search
+
+    /// Compute sentence-level cosine similarity using NLEmbedding.
+    /// Falls back to keyword search if embedding is unavailable.
+    private func semanticSearch(query: String, topK: Int) throws -> ([HealthReport], [MedicalCase]) {
+        // Try to get sentence embedding (supports Chinese + English)
+        guard let embedding = NLEmbedding.sentenceEmbedding(for: .simplifiedChinese) else {
+            // Fallback: keyword search
+            return (try keywordSearchReports(query: query, limit: topK),
+                    try keywordSearchCases(query: query, limit: topK))
+        }
+
+        let allReports = try context.fetch(FetchDescriptor<HealthReport>())
+        let allCases = try context.fetch(FetchDescriptor<MedicalCase>())
+
+        // Score each report by semantic similarity
+        var reportScores: [(report: HealthReport, score: Double)] = []
+        for report in allReports {
+            let text = reportSearchText(report)
+            guard !text.isEmpty else { continue }
+            let dist = embedding.distance(between: query, and: text)
+            // NLEmbedding.distance returns cosine distance (0 = identical, 2 = opposite)
+            // Convert to similarity: 1 - (distance / 2)
+            let similarity = 1.0 - (dist / 2.0)
+            if similarity > 0.3 { // Threshold: filter out irrelevant results
+                reportScores.append((report, similarity))
+            }
+        }
+
+        // Score each case
+        var caseScores: [(medCase: MedicalCase, score: Double)] = []
+        for medCase in allCases {
+            let text = caseSearchText(medCase)
+            guard !text.isEmpty else { continue }
+            let dist = embedding.distance(between: query, and: text)
+            let similarity = 1.0 - (dist / 2.0)
+            if similarity > 0.3 {
+                caseScores.append((medCase, similarity))
+            }
+        }
+
+        // Sort by similarity (highest first) and take top-K
+        let topReports = reportScores.sorted { $0.score > $1.score }.prefix(topK).map(\.report)
+        let topCases = caseScores.sorted { $0.score > $1.score }.prefix(topK).map(\.medCase)
+
+        // If semantic search found nothing, fall back to keyword
+        if topReports.isEmpty && topCases.isEmpty {
+            return (try keywordSearchReports(query: query, limit: topK),
+                    try keywordSearchCases(query: query, limit: topK))
+        }
+
+        return (Array(topReports), Array(topCases))
+    }
+
+    /// Build searchable text for a report (title + notes + OCR content)
+    private func reportSearchText(_ report: HealthReport) -> String {
+        var parts = [report.title]
+        if let h = report.hospitalName { parts.append(h) }
+        if let n = report.notes { parts.append(n) }
+        if let ai = report.aiAnalysis { parts.append(ai) }
+        for file in report.files {
+            if let ocr = file.ocrText {
+                // Truncate long OCR text to avoid NLEmbedding issues
+                parts.append(String(ocr.prefix(500)))
+            }
+        }
+        return parts.joined(separator: " ")
+    }
+
+    /// Build searchable text for a case (title + diagnosis + symptoms)
+    private func caseSearchText(_ c: MedicalCase) -> String {
+        var parts = [c.title]
+        if let d = c.diagnosis { parts.append(d) }
+        if !c.symptoms.isEmpty { parts.append(c.symptoms.joined(separator: " ")) }
+        if let h = c.hospitalName { parts.append(h) }
+        return parts.joined(separator: " ")
+    }
+
+    // MARK: - Keyword Search Fallback
+
+    private func keywordSearchReports(query: String, limit: Int) throws -> [HealthReport] {
+        let all = try context.fetch(FetchDescriptor<HealthReport>())
+        guard !query.isEmpty else { return [] }
+        return Array(all.filter {
+            $0.title.localizedStandardContains(query) ||
+            ($0.hospitalName?.localizedStandardContains(query) ?? false) ||
+            ($0.notes?.localizedStandardContains(query) ?? false) ||
+            $0.files.contains { $0.ocrText?.localizedStandardContains(query) ?? false }
+        }.prefix(limit))
+    }
+
+    private func keywordSearchCases(query: String, limit: Int) throws -> [MedicalCase] {
+        let all = try context.fetch(FetchDescriptor<MedicalCase>())
+        guard !query.isEmpty else { return [] }
+        return Array(all.filter {
+            $0.title.localizedStandardContains(query) ||
+            ($0.diagnosis?.localizedStandardContains(query) ?? false) ||
+            $0.symptoms.contains { $0.localizedStandardContains(query) }
+        }.prefix(limit))
+    }
+
     // MARK: - Data Fetching Helpers
 
     private func fetchReport(id: UUID) throws -> HealthReport? {
@@ -161,27 +262,6 @@ final class LocalAIService: AIServiceProtocol {
         let targetId = id
         let descriptor = FetchDescriptor<MedicalCase>()
         return try context.fetch(descriptor).first { $0.id == targetId }
-    }
-
-    private func searchReports(query: String) throws -> [HealthReport] {
-        let descriptor = FetchDescriptor<HealthReport>()
-        let all = try context.fetch(descriptor)
-        guard !query.isEmpty else { return [] }
-        return all.filter {
-            $0.title.localizedStandardContains(query) ||
-            ($0.hospitalName?.localizedStandardContains(query) ?? false) ||
-            ($0.notes?.localizedStandardContains(query) ?? false)
-        }
-    }
-
-    private func searchCases(query: String) throws -> [MedicalCase] {
-        let descriptor = FetchDescriptor<MedicalCase>()
-        let all = try context.fetch(descriptor)
-        guard !query.isEmpty else { return [] }
-        return all.filter {
-            $0.title.localizedStandardContains(query) ||
-            ($0.diagnosis?.localizedStandardContains(query) ?? false)
-        }
     }
 
     private func fetchRecentReports(limit: Int) throws -> [HealthReport] {
