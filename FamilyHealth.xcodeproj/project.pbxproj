@@ -20,18 +20,18 @@
 		34188312F1D1636FAA67DB8A /* RemoteServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 827FA29813DF7FC533C47A57 /* RemoteServices.swift */; };
 		3A5E23887E80A68043247BFF /* QRInviteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 441E1D7337EB4DACDB593BBE /* QRInviteView.swift */; };
 		3F3BE59B34BD7D73DA99334C /* SWComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5525178E0299A718840F0226 /* SWComponents.swift */; };
-		B4ED937C62EF4C23B274582C /* MarkdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A187FCD778E425D8D9B7D8E /* MarkdownView.swift */; };
 		440066F2A1A5B292461BEF41 /* AIModelConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35CB86173588BB1921FDB189 /* AIModelConfig.swift */; };
+		47F93B10FC494642B5853D8D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1447C8418AC2486F8A3A479B /* Assets.xcassets */; };
 		4CF3E5D8C2E863568EAE7774 /* LocalCaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE8F01F126B067DFDB31557 /* LocalCaseService.swift */; };
 		4F306C207F582D368ABEBA1B /* CaseDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 143652190B4AA6C922C5967E /* CaseDetailView.swift */; };
 		50AFFF8C7747ADF7E7DE2DE0 /* SWShimmer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E198161FF61448D0CB8B2A95 /* SWShimmer.swift */; };
 		53E7DF1AEC1ED047955859A0 /* LocalReportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3E458836CDA2F874CF5ADCF /* LocalReportService.swift */; };
 		54E9D0F621B7D59A53857D9A /* FamilyGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B64F9AB652E60C68860F99F /* FamilyGroup.swift */; };
+		62DDD6AD03384429A1354F14 /* TextExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C67C92AA9E64D3A8223BE28 /* TextExtractor.swift */; };
 		6698B671E1961AE5AF3B4C1F /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6D0EA8BE9FC1389B6D41D81 /* MainTabView.swift */; };
 		67C8851DCB6A88D49380AC90 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 737D625C85C187AA720CADEA /* HomeView.swift */; };
 		6C278FC95C5B4628FA471982 /* SWLoading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CAB730FB203ACAC6463C32C /* SWLoading.swift */; };
 		856A2911A6F0F01D272C9A9A /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2AE8E53BC69C94620A5BE3 /* KeychainManager.swift */; };
-		62DDD6AD03384429A1354F14 /* TextExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C67C92AA9E64D3A8223BE28 /* TextExtractor.swift */; };
 		8BF7440C76DF5F4C22CCE9F8 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE14140F52E38AE28C40CB39 /* APIClient.swift */; };
 		8F3CBC4683D1CFF43FD8F935 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F3D01A3BB55627DBB1D3E9 /* SettingsView.swift */; };
 		9351270A26159AFFA843F863 /* AddCaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 608ACC1843AA65819DF52163 /* AddCaseView.swift */; };
@@ -42,6 +42,7 @@
 		A359D3F2A16DB92C3E13CF85 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EC256FE648C88F748577CD6 /* AppState.swift */; };
 		ACECB0F6FC0465411CF0B1A8 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE35791CEDFDBEA11A4F2A94 /* LoginView.swift */; };
 		AE94965B245AD6BA496055AE /* FamilyListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC7FA88D76849D79C830AC20 /* FamilyListView.swift */; };
+		B4ED937C62EF4C23B274582C /* MarkdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A187FCD778E425D8D9B7D8E /* MarkdownView.swift */; };
 		B711295983399617BE853BF5 /* ServiceProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C31FBD5AB3ABB6DAA26023 /* ServiceProtocols.swift */; };
 		B813DF145E0C1ADD319DEEFF /* UploadReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0E537C26CDC9EE2D34E034A /* UploadReportView.swift */; };
 		BB3932531BF17D74F78512BB /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF316F12DCFE7656B95A49DB /* DesignSystem.swift */; };
@@ -52,7 +53,6 @@
 		DA215046DD14B6DAC8B08095 /* AIChatListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D859F3F049441392947943 /* AIChatListView.swift */; };
 		DA8A23F47D8BCEFB956843DA /* QRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6088B4FB02E8AD09FB5D03 /* QRScannerView.swift */; };
 		DD7C1362E363DAB760B5E23D /* FamilyHealthApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14A9060B820FF1C0912492B7 /* FamilyHealthApp.swift */; };
-		47F93B10FC494642B5853D8D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1447C8418AC2486F8A3A479B /* Assets.xcassets */; };
 		DD9D02DBC3D4F13DE28B0AE6 /* RecordsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ADFD2577F67AE810E1A26C4 /* RecordsView.swift */; };
 		E0A3C592E1E4DB5C7AB27AA4 /* LocalAIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 769E649837AB088F6097DFD7 /* LocalAIService.swift */; };
 		E40744D3355EED321583E681 /* ChatConversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4538966094192A67E6AFC4C /* ChatConversation.swift */; };
@@ -62,21 +62,22 @@
 /* Begin PBXFileReference section */
 		02F3D01A3BB55627DBB1D3E9 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		143652190B4AA6C922C5967E /* CaseDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaseDetailView.swift; sourceTree = "<group>"; };
-		14A9060B820FF1C0912492B7 /* FamilyHealthApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyHealthApp.swift; sourceTree = "<group>"; };
 		1447C8418AC2486F8A3A479B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		14A9060B820FF1C0912492B7 /* FamilyHealthApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyHealthApp.swift; sourceTree = "<group>"; };
 		154D57CE075DEA26B032A486 /* RecordsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsViewModel.swift; sourceTree = "<group>"; };
 		297FAFF411A24D61DB139F53 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		2CB5DB2D83D5BE5954669D17 /* QRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeGenerator.swift; sourceTree = "<group>"; };
 		35CB86173588BB1921FDB189 /* AIModelConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIModelConfig.swift; sourceTree = "<group>"; };
+		3C67C92AA9E64D3A8223BE28 /* TextExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextExtractor.swift; sourceTree = "<group>"; };
 		3FB7AC35F7676A09FAE34D80 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		441E1D7337EB4DACDB593BBE /* QRInviteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRInviteView.swift; sourceTree = "<group>"; };
 		4B496EA313056D88998FD753 /* EditReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditReportView.swift; sourceTree = "<group>"; };
 		4CAB730FB203ACAC6463C32C /* SWLoading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SWLoading.swift; sourceTree = "<group>"; };
 		5525178E0299A718840F0226 /* SWComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SWComponents.swift; sourceTree = "<group>"; };
-		6A187FCD778E425D8D9B7D8E /* MarkdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownView.swift; sourceTree = "<group>"; };
 		59FAFFC15CA55EB9A6AA042E /* MedicalCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicalCase.swift; sourceTree = "<group>"; };
 		608ACC1843AA65819DF52163 /* AddCaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCaseView.swift; sourceTree = "<group>"; };
 		66D85BAD8C4F21D7F1490071 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		6A187FCD778E425D8D9B7D8E /* MarkdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownView.swift; sourceTree = "<group>"; };
 		6B64F9AB652E60C68860F99F /* FamilyGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyGroup.swift; sourceTree = "<group>"; };
 		737D625C85C187AA720CADEA /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		769E649837AB088F6097DFD7 /* LocalAIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIService.swift; sourceTree = "<group>"; };
@@ -88,7 +89,6 @@
 		8AF467CABE1781936179D447 /* AIChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIChatViewModel.swift; sourceTree = "<group>"; };
 		8B0311508079651AE637B50F /* ReportDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportDetailView.swift; sourceTree = "<group>"; };
 		8B2AE8E53BC69C94620A5BE3 /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
-		3C67C92AA9E64D3A8223BE28 /* TextExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextExtractor.swift; sourceTree = "<group>"; };
 		8E374ED52155D0E527C9BC21 /* LocalAuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAuthService.swift; sourceTree = "<group>"; };
 		90DB2B8F3E97FC035B32BD75 /* HealthReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthReport.swift; sourceTree = "<group>"; };
 		981CFA5ACF871A3DA9E9D1CC /* AIChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIChatView.swift; sourceTree = "<group>"; };
@@ -112,6 +112,7 @@
 		E40CB71E9B1A070E23B60196 /* OpenAIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIClient.swift; sourceTree = "<group>"; };
 		E4538966094192A67E6AFC4C /* ChatConversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatConversation.swift; sourceTree = "<group>"; };
 		EBC2586C409B2DD947A44306 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		FCEEA4442F5EF18100C0A6DE /* FamilyHealth.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FamilyHealth.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -194,6 +195,7 @@
 		6D31D96176CDC038A75A0C1E /* FamilyHealth */ = {
 			isa = PBXGroup;
 			children = (
+				FCEEA4442F5EF18100C0A6DE /* FamilyHealth.entitlements */,
 				1F9D54339BCF6D1ADACD8152 /* App */,
 				77DA54F5C32A2747021E3CDA /* Models */,
 				2BB5BBBB4F2FC2D5D1E1DB15 /* Resources */,
@@ -469,10 +471,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = FamilyHealth/FamilyHealth.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = PRHS3BP7TJ;
+				INFOPLIST_KEY_CFBundleDisplayName = FamilyHealth;
 				INFOPLIST_KEY_NSCameraUsageDescription = "用于扫描二维码和拍摄体检报告";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "用于选择体检报告图片";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -480,7 +483,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.familyhealth.app;
+				PRODUCT_BUNDLE_IDENTIFIER = io.hashwalker.familyhealth;
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -551,10 +554,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = FamilyHealth/FamilyHealth.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = PRHS3BP7TJ;
+				INFOPLIST_KEY_CFBundleDisplayName = FamilyHealth;
 				INFOPLIST_KEY_NSCameraUsageDescription = "用于扫描二维码和拍摄体检报告";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "用于选择体检报告图片";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -562,7 +566,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.familyhealth.app;
+				PRODUCT_BUNDLE_IDENTIFIER = io.hashwalker.familyhealth;
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
