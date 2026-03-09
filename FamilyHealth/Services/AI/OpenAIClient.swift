@@ -41,9 +41,10 @@ actor OpenAIClient {
         model: String,
         messages: [(role: String, content: String)]
     ) async throws -> String {
-        let url = URL(string: endpoint.hasSuffix("/")
-            ? endpoint + "chat/completions"
-            : endpoint + "/chat/completions")!
+        let baseURL = endpoint.hasSuffix("/") ? endpoint : endpoint + "/"
+        guard let url = URL(string: baseURL + "chat/completions") else {
+            throw AIError.apiError("无效的 API 地址: \(endpoint)")
+        }
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -86,9 +87,10 @@ actor OpenAIClient {
         AsyncThrowingStream { continuation in
             Task {
                 do {
-                    let url = URL(string: endpoint.hasSuffix("/")
-                        ? endpoint + "chat/completions"
-                        : endpoint + "/chat/completions")!
+                    let baseURL = endpoint.hasSuffix("/") ? endpoint : endpoint + "/"
+                    guard let url = URL(string: baseURL + "chat/completions") else {
+                        throw AIError.apiError("无效的 API 地址: \(endpoint)")
+                    }
 
                     var request = URLRequest(url: url)
                     request.httpMethod = "POST"
@@ -105,9 +107,22 @@ actor OpenAIClient {
 
                     let (bytes, response) = try await URLSession.shared.bytes(for: request)
 
-                    guard let httpResponse = response as? HTTPURLResponse,
-                          httpResponse.statusCode == 200 else {
-                        throw AIError.httpError((response as? HTTPURLResponse)?.statusCode ?? 0)
+                    guard let httpResponse = response as? HTTPURLResponse else {
+                        throw AIError.invalidResponse
+                    }
+
+                    if httpResponse.statusCode != 200 {
+                        // Try to read error body
+                        var errorBody = ""
+                        for try await line in bytes.lines {
+                            errorBody += line
+                            if errorBody.count > 500 { break }
+                        }
+                        if let data = errorBody.data(using: .utf8),
+                           let errResp = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
+                            throw AIError.apiError(errResp.error.message)
+                        }
+                        throw AIError.httpError(httpResponse.statusCode)
                     }
 
                     for try await line in bytes.lines {

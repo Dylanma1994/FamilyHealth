@@ -36,5 +36,6 @@ struct MainTabView: View {
                 }
                 .tag(4)
         }
+        .tint(FHColors.primary)
     }
 }

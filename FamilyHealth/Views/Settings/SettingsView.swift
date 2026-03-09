@@ -9,29 +9,30 @@ struct SettingsView: View {
             List {
                 // Profile header
                 Section {
-                    HStack(spacing: 16) {
+                    HStack(spacing: FHSpacing.lg) {
                         Circle()
-                            .fill(Color(.systemGray4))
+                            .fill(FHGradients.profileAvatar)
                             .frame(width: 60, height: 60)
                             .overlay(
                                 Image(systemName: "person.fill")
                                     .font(.title2)
                                     .foregroundStyle(.white)
                             )
+                            .fhShadow(.light)
 
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: FHSpacing.xs) {
                             Text("用户")
                                 .font(.title3.bold())
                             Text(appState.mode.displayName)
                                 .font(.caption)
-                                .padding(.horizontal, 8)
+                                .padding(.horizontal, FHSpacing.sm)
                                 .padding(.vertical, 2)
-                                .background(.green.opacity(0.1))
-                                .foregroundStyle(.green)
+                                .background(FHColors.success.opacity(0.1))
+                                .foregroundStyle(FHColors.success)
                                 .clipShape(Capsule())
                         }
                     }
-                    .padding(.vertical, 4)
+                    .padding(.vertical, FHSpacing.xs)
                 }
 
                 // Account
@@ -179,10 +180,18 @@ struct ModeSettingsView: View {
 // MARK: - AI Model Settings
 struct AIModelSettingsView: View {
     @Query private var configs: [AIModelConfig]
+    @Environment(\.modelContext) private var context
     @State private var showAddSheet = false
 
     var body: some View {
         List {
+            if configs.isEmpty {
+                Section {
+                    Text("尚未添加任何 AI 模型")
+                        .foregroundStyle(.secondary)
+                }
+            }
+
             ForEach(configs) { config in
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
@@ -194,7 +203,7 @@ struct AIModelSettingsView: View {
                                     .font(.caption2)
                                     .padding(.horizontal, 6)
                                     .padding(.vertical, 2)
-                                    .background(.blue)
+                                    .background(FHColors.primary)
                                     .foregroundStyle(.white)
                                     .clipShape(Capsule())
                             }
@@ -210,6 +219,37 @@ struct AIModelSettingsView: View {
                     Spacer()
                 }
                 .padding(.vertical, 4)
+                .contextMenu {
+                    if !config.isDefault {
+                        Button {
+                            setAsDefault(config)
+                        } label: {
+                            Label("设为默认", systemImage: "checkmark.circle")
+                        }
+                    }
+                    Button(role: .destructive) {
+                        deleteConfig(config)
+                    } label: {
+                        Label("删除", systemImage: "trash")
+                    }
+                }
+                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                    Button(role: .destructive) {
+                        deleteConfig(config)
+                    } label: {
+                        Label("删除", systemImage: "trash")
+                    }
+                }
+                .swipeActions(edge: .leading) {
+                    if !config.isDefault {
+                        Button {
+                            setAsDefault(config)
+                        } label: {
+                            Label("默认", systemImage: "checkmark.circle")
+                        }
+                        .tint(FHColors.primary)
+                    }
+                }
             }
 
             Button {
@@ -223,12 +263,30 @@ struct AIModelSettingsView: View {
             AddAIModelView()
         }
     }
+
+    private func setAsDefault(_ config: AIModelConfig) {
+        for c in configs { c.isDefault = false }
+        config.isDefault = true
+        try? context.save()
+    }
+
+    private func deleteConfig(_ config: AIModelConfig) {
+        try? KeychainManager.deleteAPIKey(for: config.id)
+        let wasDefault = config.isDefault
+        context.delete(config)
+        try? context.save()
+        if wasDefault, let first = configs.first {
+            first.isDefault = true
+            try? context.save()
+        }
+    }
 }
 
 // MARK: - Add AI Model
 struct AddAIModelView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
+    @Query private var existingConfigs: [AIModelConfig]
 
     @State private var name = ""
     @State private var provider: AIModelConfig.Provider = .openai
@@ -237,6 +295,8 @@ struct AddAIModelView: View {
     @State private var modelName = ""
     @State private var isDefault = false
     @State private var testResult: String?
+    @State private var testPassed = false
+    @State private var isTesting = false
 
     var body: some View {
         NavigationStack {
@@ -252,25 +312,43 @@ struct AddAIModelView: View {
                 }
 
                 Section("API 配置") {
-                    TextField("API 地址", text: $apiEndpoint)
+                    TextField("API 地址（如 https://api.openai.com/v1）", text: $apiEndpoint)
                         .keyboardType(.URL)
                         .textInputAutocapitalization(.never)
+                        .onChange(of: apiEndpoint) { _, _ in testPassed = false }
 
                     SecureField("API Key", text: $apiKey)
+                        .onChange(of: apiKey) { _, _ in testPassed = false }
 
                     TextField("模型名称（如 gpt-4o）", text: $modelName)
                         .textInputAutocapitalization(.never)
+                        .onChange(of: modelName) { _, _ in testPassed = false }
                 }
 
                 Section {
-                    Button("测试连接") {
-                        testResult = "连接测试功能将在 M4 实现"
+                    Button {
+                        runTest()
+                    } label: {
+                        HStack {
+                            if isTesting {
+                                ProgressView()
+                                    .controlSize(.small)
+                                Text("测试中...")
+                            } else {
+                                Label("测试连接", systemImage: testPassed ? "checkmark.circle.fill" : "bolt.horizontal")
+                            }
+                        }
                     }
+                    .disabled(apiEndpoint.isEmpty || apiKey.isEmpty || modelName.isEmpty || isTesting)
+
                     if let result = testResult {
                         Text(result)
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(testPassed ? FHColors.success : FHColors.danger)
                     }
+                } footer: {
+                    Text("必须通过连接测试后才能保存模型")
+                        .font(.caption2)
                 }
 
                 Section {
@@ -284,24 +362,48 @@ struct AddAIModelView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("保存") { save() }
-                        .disabled(name.isEmpty || apiEndpoint.isEmpty || apiKey.isEmpty || modelName.isEmpty)
+                        .disabled(!testPassed || name.isEmpty)
                 }
             }
         }
     }
 
+    private func runTest() {
+        isTesting = true
+        testResult = nil
+        testPassed = false
+
+        Task {
+            do {
+                let client = OpenAIClient()
+                let success = try await client.testConnection(
+                    endpoint: apiEndpoint, apiKey: apiKey, model: modelName)
+                testResult = success ? "✅ 连接成功，可以保存" : "❌ 连接失败"
+                testPassed = success
+            } catch {
+                testResult = "❌ \(error.localizedDescription)"
+                testPassed = false
+            }
+            isTesting = false
+        }
+    }
+
     private func save() {
+        let shouldBeDefault = isDefault || existingConfigs.isEmpty
+        if shouldBeDefault {
+            for c in existingConfigs { c.isDefault = false }
+        }
+
         let config = AIModelConfig(
             name: name,
             provider: provider,
             apiEndpoint: apiEndpoint,
             modelName: modelName,
-            isDefault: isDefault
+            isDefault: shouldBeDefault
         )
         context.insert(config)
-
-        // Save API key to Keychain
         try? KeychainManager.saveAPIKey(apiKey, for: config.id)
+        try? context.save()
 
         dismiss()
     }

@@ -3,11 +3,15 @@ import SwiftData
 
 @main
 struct FamilyHealthApp: App {
-    let container: ModelContainer
+    let modelContainer: ModelContainer
+    let serviceContainer: ServiceContainer
 
     @StateObject private var appState = AppState()
 
     init() {
+        let appState = AppState()
+        _appState = StateObject(wrappedValue: appState)
+
         do {
             let schema = Schema([
                 User.self,
@@ -26,21 +30,22 @@ struct FamilyHealthApp: App {
                 schema: schema,
                 isStoredInMemoryOnly: false
             )
-            container = try ModelContainer(for: schema, configurations: [config])
+            modelContainer = try ModelContainer(for: schema, configurations: [config])
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
         }
+
+        // Create single shared ServiceContainer
+        serviceContainer = ServiceContainer(appState: appState)
+        serviceContainer.configure(modelContext: modelContainer.mainContext)
     }
 
     var body: some Scene {
         WindowGroup {
             RootView()
                 .environmentObject(appState)
-                .environment(ServiceContainer(
-                    mode: appState.mode,
-                    modelContainer: container
-                ))
+                .environment(serviceContainer)
         }
-        .modelContainer(container)
+        .modelContainer(modelContainer)
     }
 }

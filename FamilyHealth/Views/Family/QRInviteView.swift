@@ -9,21 +9,21 @@ struct QRInviteView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 24) {
+            VStack(spacing: FHSpacing.xxl) {
                 Spacer()
 
                 // QR Code
-                VStack(spacing: 16) {
+                VStack(spacing: FHSpacing.lg) {
                     if let qrImage = QRCodeGenerator.generate(from: inviteCode, size: 220) {
                         Image(uiImage: qrImage)
                             .interpolation(.none)
                             .resizable()
                             .scaledToFit()
                             .frame(width: 220, height: 220)
-                            .padding(20)
+                            .padding(FHSpacing.xl)
                             .background(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 16))
-                            .shadow(color: .black.opacity(0.08), radius: 12, y: 4)
+                            .clipShape(RoundedRectangle(cornerRadius: FHRadius.large))
+                            .fhShadow(.medium)
                     }
 
                     Text(groupName)
@@ -40,16 +40,16 @@ struct QRInviteView: View {
                     Text("二维码 24 小时内有效")
                 }
                 .font(.caption)
-                .foregroundStyle(.orange)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(.orange.opacity(0.1))
+                .foregroundStyle(FHColors.warning)
+                .padding(.horizontal, FHSpacing.lg)
+                .padding(.vertical, FHSpacing.sm)
+                .background(FHColors.warning.opacity(0.1))
                 .clipShape(Capsule())
 
                 Spacer()
 
                 // Actions
-                VStack(spacing: 12) {
+                VStack(spacing: FHSpacing.md) {
                     Button {
                         UIPasteboard.general.string = inviteCode
                         showCopied = true
@@ -58,10 +58,11 @@ struct QRInviteView: View {
                             .font(.headline)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(.blue)
+                            .background(FHGradients.accentButton)
                             .foregroundStyle(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 14))
+                            .clipShape(RoundedRectangle(cornerRadius: FHRadius.medium))
                     }
+                    .fhPressStyle()
 
                     Button {
                         // Share sheet
@@ -78,13 +79,14 @@ struct QRInviteView: View {
                             .font(.headline)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color(.systemGray5))
+                            .background(FHColors.subtleGray)
                             .foregroundStyle(.primary)
-                            .clipShape(RoundedRectangle(cornerRadius: 14))
+                            .clipShape(RoundedRectangle(cornerRadius: FHRadius.medium))
                     }
+                    .fhPressStyle()
                 }
-                .padding(.horizontal, 24)
-                .padding(.bottom, 32)
+                .padding(.horizontal, FHSpacing.xxl)
+                .padding(.bottom, FHSpacing.xxxl)
             }
             .navigationTitle("邀请加入")
             .navigationBarTitleDisplayMode(.inline)

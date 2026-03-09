@@ -91,3 +91,80 @@ final class ReportFile {
         case pdf
     }
 }
+
+// MARK: - Codable DTOs for Remote API
+
+/// DTO for serializing HealthReport to/from JSON (remote mode).
+struct HealthReportDTO: Codable {
+    let id: UUID
+    let userId: UUID
+    let uploaderId: UUID
+    let title: String
+    let hospitalName: String?
+    let reportDate: Date
+    let reportType: String
+    let notes: String?
+    let aiAnalysis: String?
+    let createdAt: Date
+    let updatedAt: Date
+    let files: [ReportFileDTO]?
+
+    enum CodingKeys: String, CodingKey {
+        case id, title, notes, files
+        case userId = "user_id"
+        case uploaderId = "uploader_id"
+        case hospitalName = "hospital_name"
+        case reportDate = "report_date"
+        case reportType = "report_type"
+        case aiAnalysis = "ai_analysis"
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+    }
+}
+
+/// DTO for serializing ReportFile to/from JSON.
+struct ReportFileDTO: Codable {
+    let id: UUID
+    let fileType: String
+    let localPath: String
+    let remoteURL: String?
+    let fileName: String
+    let fileSize: Int64
+    let ocrText: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case fileType = "file_type"
+        case localPath = "local_path"
+        case remoteURL = "remote_url"
+        case fileName = "file_name"
+        case fileSize = "file_size"
+        case ocrText = "ocr_text"
+    }
+}
+
+extension HealthReport {
+    /// Convert to DTO for remote API transmission.
+    func toDTO() -> HealthReportDTO {
+        HealthReportDTO(
+            id: id, userId: userId, uploaderId: uploaderId,
+            title: title, hospitalName: hospitalName,
+            reportDate: reportDate, reportType: reportType.rawValue,
+            notes: notes, aiAnalysis: aiAnalysis,
+            createdAt: createdAt, updatedAt: updatedAt,
+            files: files.map { $0.toDTO() }
+        )
+    }
+}
+
+extension ReportFile {
+    /// Convert to DTO for remote API transmission.
+    func toDTO() -> ReportFileDTO {
+        ReportFileDTO(
+            id: id, fileType: fileType.rawValue,
+            localPath: localPath, remoteURL: remoteURL,
+            fileName: fileName, fileSize: fileSize,
+            ocrText: ocrText
+        )
+    }
+}

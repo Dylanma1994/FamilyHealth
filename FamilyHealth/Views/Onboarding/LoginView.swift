@@ -5,100 +5,131 @@ struct LoginView: View {
     @Environment(ServiceContainer.self) private var services
     @State private var phone = ""
     @State private var name = ""
-    @State private var gender: User.Gender = .other
+    @State private var gender: User.Gender = .male
     @State private var showProfileSetup = false
     @State private var errorMessage: String?
+    @State private var logoBreathing = false
+    @State private var contentAppeared = false
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 32) {
-                Spacer()
+            ZStack {
+                FHGradients.onboardingBg.ignoresSafeArea()
 
-                // Logo
-                VStack(spacing: 12) {
-                    Image(systemName: "heart.circle.fill")
-                        .font(.system(size: 72))
-                        .foregroundStyle(.blue)
-                    Text("FamilyHealth")
-                        .font(.title.bold())
-                }
+                VStack(spacing: FHSpacing.xxxl) {
+                    Spacer()
 
-                // Phone input
-                VStack(spacing: 16) {
-                    HStack {
-                        Text("+86")
-                            .foregroundStyle(.secondary)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 10)
-                            .background(Color(.systemGray6))
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    // Logo with breathing animation
+                    VStack(spacing: FHSpacing.md) {
+                        ZStack {
+                            Circle()
+                                .fill(FHColors.primary.opacity(0.08))
+                                .frame(width: 110, height: 110)
+                                .scaleEffect(logoBreathing ? 1.08 : 0.95)
 
-                        TextField("手机号", text: $phone)
-                            .keyboardType(.phonePad)
-                            .textFieldStyle(.roundedBorder)
-                    }
-
-                    if appState.mode == .local {
-                        TextField("您的姓名", text: $name)
-                            .textFieldStyle(.roundedBorder)
-
-                        Picker("性别", selection: $gender) {
-                            ForEach(User.Gender.allCases, id: \.self) { g in
-                                Text(g.displayName).tag(g)
-                            }
+                            Image(systemName: "heart.circle.fill")
+                                .font(.system(size: 72))
+                                .foregroundStyle(FHColors.primary)
+                                .symbolRenderingMode(.hierarchical)
                         }
-                        .pickerStyle(.segmented)
+
+                        Text("FamilyHealth")
+                            .font(.title.bold())
                     }
-                }
-                .padding(.horizontal, 24)
+                    .fhStaggerEntrance(index: 0)
 
-                // Mode selector
-                VStack(spacing: 8) {
-                    Text("运行模式")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                    // Phone input
+                    VStack(spacing: FHSpacing.lg) {
+                        HStack {
+                            Text("+86")
+                                .foregroundStyle(.secondary)
+                                .padding(.horizontal, FHSpacing.md)
+                                .padding(.vertical, 10)
+                                .background(FHColors.subtleGray)
+                                .clipShape(RoundedRectangle(cornerRadius: FHRadius.small))
 
-                    HStack(spacing: 12) {
-                        ModeCard(
-                            icon: "iphone",
-                            title: "本地模式",
-                            subtitle: "无需联网，数据保存在本地",
-                            isSelected: appState.mode == .local
-                        ) { appState.mode = .local }
+                            TextField("手机号", text: $phone)
+                                .keyboardType(.phonePad)
+                                .textFieldStyle(.roundedBorder)
+                        }
 
-                        ModeCard(
-                            icon: "cloud",
-                            title: "联网模式",
-                            subtitle: "数据同步至云端，随时访问",
-                            isSelected: appState.mode == .remote
-                        ) { appState.mode = .remote }
+                        if appState.mode == .local {
+                            TextField("您的姓名", text: $name)
+                                .textFieldStyle(.roundedBorder)
+
+                            Picker("性别", selection: $gender) {
+                                ForEach(User.Gender.allCases, id: \.self) { g in
+                                    Text(g.displayName).tag(g)
+                                }
+                            }
+                            .pickerStyle(.segmented)
+                        }
                     }
-                    .padding(.horizontal, 24)
-                }
+                    .padding(.horizontal, FHSpacing.xxl)
+                    .fhStaggerEntrance(index: 1)
 
-                if let error = errorMessage {
-                    Text(error)
-                        .font(.caption)
-                        .foregroundStyle(.red)
-                }
+                    // Mode selector with spring bounce
+                    VStack(spacing: FHSpacing.sm) {
+                        Text("运行模式")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
 
-                Spacer()
+                        HStack(spacing: FHSpacing.md) {
+                            ModeCard(
+                                icon: "iphone",
+                                title: "本地模式",
+                                subtitle: "无需联网，数据保存在本地",
+                                isSelected: appState.mode == .local
+                            ) { appState.mode = .local }
 
-                // Login button
-                Button {
-                    Task { await login() }
-                } label: {
-                    Text(appState.mode == .local ? "创建本地账户" : "获取验证码")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(.blue)
-                        .foregroundColor(.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                            ModeCard(
+                                icon: "cloud",
+                                title: "联网模式",
+                                subtitle: "数据同步至云端，随时访问",
+                                isSelected: appState.mode == .remote
+                            ) { appState.mode = .remote }
+                        }
+                        .padding(.horizontal, FHSpacing.xxl)
+                    }
+                    .fhStaggerEntrance(index: 2)
+
+                    if let error = errorMessage {
+                        Text(error)
+                            .font(.caption)
+                            .foregroundStyle(FHColors.danger)
+                            .transition(.opacity)
+                    }
+
+                    Spacer()
+
+                    // Login button with gradient
+                    Button {
+                        Task { await login() }
+                    } label: {
+                        Text(appState.mode == .local ? "创建本地账户" : "获取验证码")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(
+                                (phone.isEmpty || (appState.mode == .local && name.isEmpty))
+                                    ? AnyShapeStyle(Color.gray.opacity(0.4))
+                                    : AnyShapeStyle(FHGradients.accentButton)
+                            )
+                            .foregroundStyle(.white)
+                            .clipShape(RoundedRectangle(cornerRadius: FHRadius.large))
+                            .fhShadow(.medium)
+                    }
+                    .disabled(phone.isEmpty || (appState.mode == .local && name.isEmpty))
+                    .fhPressStyle()
+                    .padding(.horizontal, FHSpacing.xxl)
+                    .padding(.bottom, FHSpacing.xxxl)
+                    .fhStaggerEntrance(index: 3)
                 }
-                .disabled(phone.isEmpty || (appState.mode == .local && name.isEmpty))
-                .padding(.horizontal, 24)
-                .padding(.bottom, 32)
+            }
+            .onAppear {
+                withAnimation(FHAnimation.gentlePulse) {
+                    logoBreathing = true
+                }
             }
         }
     }
@@ -111,7 +142,6 @@ struct LoginView: View {
                 )
                 appState.currentUserId = user.id.uuidString
             } else {
-                // TODO: Remote login with SMS verification
                 errorMessage = "联网模式登录暂未实现"
             }
         } catch {
@@ -129,11 +159,13 @@ struct ModeCard: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 8) {
+            VStack(spacing: FHSpacing.sm) {
                 Image(systemName: icon)
                     .font(.title2)
+                    .foregroundStyle(isSelected ? FHColors.primary : .secondary)
                 Text(title)
                     .font(.subheadline.bold())
+                    .foregroundStyle(isSelected ? FHColors.primary : .primary)
                 Text(subtitle)
                     .font(.caption2)
                     .foregroundStyle(.secondary)
@@ -141,13 +173,15 @@ struct ModeCard: View {
             }
             .frame(maxWidth: .infinity)
             .padding()
-            .background(isSelected ? Color.blue.opacity(0.1) : Color(.systemGray6))
+            .background(isSelected ? FHColors.primary.opacity(0.08) : FHColors.subtleGray)
             .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(isSelected ? .blue : .clear, lineWidth: 2)
+                RoundedRectangle(cornerRadius: FHRadius.medium)
+                    .stroke(isSelected ? FHColors.primary : .clear, lineWidth: 2)
             )
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .clipShape(RoundedRectangle(cornerRadius: FHRadius.medium))
+            .scaleEffect(isSelected ? 1.02 : 1.0)
+            .animation(FHAnimation.springBounce, value: isSelected)
         }
-        .buttonStyle(.plain)
+        .fhPressStyle()
     }
 }

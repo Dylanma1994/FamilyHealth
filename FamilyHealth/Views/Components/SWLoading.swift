@@ -15,7 +15,7 @@ struct SWLoadingView: View {
                 // Outer pulse ring
                 Circle()
                     .stroke(lineWidth: 3)
-                    .foregroundStyle(.blue.opacity(0.3))
+                    .foregroundStyle(FHColors.primary.opacity(0.3))
                     .frame(width: 48, height: 48)
                     .scaleEffect(isAnimating ? 1.3 : 1)
                     .opacity(isAnimating ? 0 : 0.6)
@@ -24,7 +24,7 @@ struct SWLoadingView: View {
                 Circle()
                     .trim(from: 0, to: 0.7)
                     .stroke(style: StrokeStyle(lineWidth: 3, lineCap: .round))
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(FHColors.primary)
                     .frame(width: 36, height: 36)
                     .rotationEffect(.degrees(isAnimating ? 360 : 0))
             }
@@ -66,8 +66,8 @@ struct SWSkeletonCard: View {
             }
         }
         .padding()
-        .background(.background)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .background(FHColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: FHRadius.medium))
         .swShimmer()
     }
 }

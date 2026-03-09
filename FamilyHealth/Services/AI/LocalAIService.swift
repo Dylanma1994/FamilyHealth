@@ -55,14 +55,14 @@ final class LocalAIService: AIServiceProtocol {
                     }
 
                     // 5. Stream response
-                    let stream = client.chatStream(
+                    let stream = await client.chatStream(
                         endpoint: config.apiEndpoint,
                         apiKey: apiKey,
                         model: config.modelName,
                         messages: apiMessages
                     )
 
-                    for try await chunk in await stream {
+                    for try await chunk in stream {
                         continuation.yield(chunk)
                     }
                     continuation.finish()
@@ -152,30 +152,36 @@ final class LocalAIService: AIServiceProtocol {
     // MARK: - Data Fetching Helpers
 
     private func fetchReport(id: UUID) throws -> HealthReport? {
-        let predicate = #Predicate<HealthReport> { $0.id == id }
-        return try context.fetch(FetchDescriptor(predicate: predicate)).first
+        let targetId = id
+        let descriptor = FetchDescriptor<HealthReport>()
+        return try context.fetch(descriptor).first { $0.id == targetId }
     }
 
     private func fetchCase(id: UUID) throws -> MedicalCase? {
-        let predicate = #Predicate<MedicalCase> { $0.id == id }
-        return try context.fetch(FetchDescriptor(predicate: predicate)).first
+        let targetId = id
+        let descriptor = FetchDescriptor<MedicalCase>()
+        return try context.fetch(descriptor).first { $0.id == targetId }
     }
 
     private func searchReports(query: String) throws -> [HealthReport] {
-        let predicate = #Predicate<HealthReport> {
+        let descriptor = FetchDescriptor<HealthReport>()
+        let all = try context.fetch(descriptor)
+        guard !query.isEmpty else { return [] }
+        return all.filter {
             $0.title.localizedStandardContains(query) ||
             ($0.hospitalName?.localizedStandardContains(query) ?? false) ||
             ($0.notes?.localizedStandardContains(query) ?? false)
         }
-        return try context.fetch(FetchDescriptor(predicate: predicate))
     }
 
     private func searchCases(query: String) throws -> [MedicalCase] {
-        let predicate = #Predicate<MedicalCase> {
+        let descriptor = FetchDescriptor<MedicalCase>()
+        let all = try context.fetch(descriptor)
+        guard !query.isEmpty else { return [] }
+        return all.filter {
             $0.title.localizedStandardContains(query) ||
             ($0.diagnosis?.localizedStandardContains(query) ?? false)
         }
-        return try context.fetch(FetchDescriptor(predicate: predicate))
     }
 
     private func fetchRecentReports(limit: Int) throws -> [HealthReport] {

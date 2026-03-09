@@ -15,18 +15,16 @@ final class LocalCaseService: CaseService {
     }
 
     func fetchCases(userId: UUID) async throws -> [MedicalCase] {
-        let predicate = #Predicate<MedicalCase> { $0.userId == userId }
-        let descriptor = FetchDescriptor(
-            predicate: predicate,
+        var descriptor = FetchDescriptor<MedicalCase>(
             sortBy: [SortDescriptor(\.visitDate, order: .reverse)]
         )
-        return try context.fetch(descriptor)
+        descriptor.fetchLimit = 200
+        return try context.fetch(descriptor).filter { $0.userId == userId }
     }
 
     func fetchCase(id: UUID) async throws -> MedicalCase? {
-        let predicate = #Predicate<MedicalCase> { $0.id == id }
-        let descriptor = FetchDescriptor(predicate: predicate)
-        return try context.fetch(descriptor).first
+        let descriptor = FetchDescriptor<MedicalCase>()
+        return try context.fetch(descriptor).first { $0.id == id }
     }
 
     func updateCase(_ medicalCase: MedicalCase) async throws {
@@ -35,33 +33,25 @@ final class LocalCaseService: CaseService {
     }
 
     func deleteCase(id: UUID) async throws {
-        let predicate = #Predicate<MedicalCase> { $0.id == id }
-        let descriptor = FetchDescriptor(predicate: predicate)
-        if let medicalCase = try context.fetch(descriptor).first {
+        let descriptor = FetchDescriptor<MedicalCase>()
+        if let medicalCase = try context.fetch(descriptor).first(where: { $0.id == id }) {
             context.delete(medicalCase)
             try context.save()
         }
     }
 
     func searchCases(query: String, userId: UUID?) async throws -> [MedicalCase] {
-        let predicate: Predicate<MedicalCase>
-        if let userId {
-            predicate = #Predicate<MedicalCase> {
-                $0.userId == userId && (
-                    $0.title.localizedStandardContains(query) ||
-                    ($0.diagnosis?.localizedStandardContains(query) ?? false)
-                )
-            }
-        } else {
-            predicate = #Predicate<MedicalCase> {
-                $0.title.localizedStandardContains(query) ||
-                ($0.diagnosis?.localizedStandardContains(query) ?? false)
-            }
-        }
-        let descriptor = FetchDescriptor(
-            predicate: predicate,
+        var descriptor = FetchDescriptor<MedicalCase>(
             sortBy: [SortDescriptor(\.visitDate, order: .reverse)]
         )
-        return try context.fetch(descriptor)
+        descriptor.fetchLimit = 200
+        let all = try context.fetch(descriptor)
+        return all.filter { medCase in
+            let matchesUser = userId == nil || medCase.userId == userId
+            let matchesQuery = query.isEmpty ||
+                medCase.title.localizedStandardContains(query) ||
+                (medCase.diagnosis?.localizedStandardContains(query) ?? false)
+            return matchesUser && matchesQuery
+        }
     }
 }

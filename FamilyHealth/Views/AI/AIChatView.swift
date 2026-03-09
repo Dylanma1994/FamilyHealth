@@ -26,11 +26,42 @@ struct AIChatView: View {
     }
 
     var body: some View {
+        Group {
+            if defaultConfig == nil {
+                // No AI config — show setup prompt
+                VStack(spacing: FHSpacing.lg) {
+                    Spacer()
+                    ZStack {
+                        Circle()
+                            .fill(FHColors.aiPurple.opacity(0.08))
+                            .frame(width: 100, height: 100)
+                        Image(systemName: "cpu")
+                            .font(.system(size: 40))
+                            .foregroundStyle(FHColors.aiPurple)
+                    }
+                    Text("需要配置 AI 模型")
+                        .font(.title3.bold())
+                    Text("请在设置中添加 API 地址和 API Key\n支持 OpenAI、Gemini、Ollama 等兼容接口")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 40)
+                    Spacer()
+                }
+                .navigationTitle("AI 对话")
+                .navigationBarTitleDisplayMode(.inline)
+            } else {
+                chatContent
+            }
+        }
+    }
+
+    private var chatContent: some View {
         VStack(spacing: 0) {
             // Messages
             ScrollViewReader { proxy in
                 ScrollView {
-                    LazyVStack(spacing: 16) {
+                    LazyVStack(spacing: FHSpacing.lg) {
                         if sortedMessages.isEmpty && !isStreaming {
                             welcomeView
                         }
@@ -40,10 +71,26 @@ struct AIChatView: View {
                                 .id(msg.id)
                         }
 
-                        // Streaming message
-                        if isStreaming && !streamedContent.isEmpty {
-                            StreamingBubble(content: streamedContent)
+                        // Streaming message or thinking indicator
+                        if isStreaming {
+                            if streamedContent.isEmpty {
+                                // Thinking indicator while waiting for first chunk
+                                HStack(spacing: 8) {
+                                    ProgressView()
+                                        .controlSize(.small)
+                                    Text("思考中...")
+                                        .font(.subheadline)
+                                        .foregroundStyle(.secondary)
+                                }
+                                .padding(FHSpacing.md)
+                                .background(Color(.systemGray5))
+                                .clipShape(RoundedRectangle(cornerRadius: FHRadius.large))
+                                .frame(maxWidth: .infinity, alignment: .leading)
                                 .id("streaming")
+                            } else {
+                                StreamingBubble(content: streamedContent)
+                                    .id("streaming")
+                            }
                         }
                     }
                     .padding()
@@ -61,12 +108,12 @@ struct AIChatView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 if let config = defaultConfig {
-                    Text(config.modelName)
+                    Text(config.name)
                         .font(.caption2)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(.blue.opacity(0.1))
-                        .foregroundStyle(.blue)
+                        .padding(.horizontal, FHSpacing.sm)
+                        .padding(.vertical, FHSpacing.xs)
+                        .background(FHColors.primary.opacity(0.1))
+                        .foregroundStyle(FHColors.primary)
                         .clipShape(Capsule())
                 }
             }
@@ -78,11 +125,21 @@ struct AIChatView: View {
     // MARK: - Welcome
 
     private var welcomeView: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "sparkles")
-                .font(.system(size: 48))
-                .foregroundStyle(.blue)
-                .padding(.top, 60)
+        VStack(spacing: FHSpacing.lg) {
+            Spacer().frame(height: 40)
+
+            // Animated sparkle icon
+            ZStack {
+                Circle()
+                    .fill(FHColors.aiPurple.opacity(0.08))
+                    .frame(width: 100, height: 100)
+
+                Image(systemName: "sparkles")
+                    .font(.system(size: 44))
+                    .foregroundStyle(FHColors.aiPurple)
+                    .symbolRenderingMode(.hierarchical)
+            }
+            .fhGlowPulse(color: FHColors.aiPurple)
 
             Text("健康 AI 助手")
                 .font(.title2.bold())
@@ -94,25 +151,31 @@ struct AIChatView: View {
                 .padding(.horizontal, 40)
 
             // Quick prompts
-            VStack(spacing: 8) {
-                QuickPromptButton("帮我分析最近的体检报告") { sendMessage("帮我分析最近的体检报告") }
-                QuickPromptButton("我的健康数据有哪些异常？") { sendMessage("我的健康数据有哪些异常？") }
-                QuickPromptButton("给出一些健康改善建议") { sendMessage("给出一些健康改善建议") }
+            VStack(spacing: FHSpacing.sm) {
+                QuickPromptButton(icon: "doc.text.viewfinder", text: "帮我分析最近的体检报告") {
+                    sendMessage("帮我分析最近的体检报告")
+                }
+                QuickPromptButton(icon: "exclamationmark.triangle", text: "我的健康数据有哪些异常？") {
+                    sendMessage("我的健康数据有哪些异常？")
+                }
+                QuickPromptButton(icon: "heart.text.square", text: "给出一些健康改善建议") {
+                    sendMessage("给出一些健康改善建议")
+                }
             }
-            .padding(.top, 8)
+            .padding(.top, FHSpacing.sm)
         }
     }
 
     // MARK: - Input Bar
 
     private var inputBar: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: FHSpacing.md) {
             TextField("输入消息...", text: $inputText, axis: .vertical)
                 .lineLimit(1...5)
                 .textFieldStyle(.plain)
-                .padding(12)
-                .background(Color(.systemGray6))
-                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .padding(FHSpacing.md)
+                .background(FHColors.subtleGray)
+                .clipShape(RoundedRectangle(cornerRadius: FHRadius.xl))
 
             Button {
                 let text = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -122,11 +185,13 @@ struct AIChatView: View {
             } label: {
                 Image(systemName: "arrow.up.circle.fill")
                     .font(.title)
-                    .foregroundStyle(inputText.isEmpty || isStreaming ? .gray : .blue)
+                    .foregroundStyle(inputText.isEmpty || isStreaming ? .gray : FHColors.primary)
+                    .scaleEffect(inputText.isEmpty ? 1.0 : 1.1)
+                    .animation(FHAnimation.springBounce, value: inputText.isEmpty)
             }
             .disabled(inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isStreaming)
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, FHSpacing.lg)
         .padding(.vertical, 10)
         .background(.background)
     }
@@ -135,8 +200,8 @@ struct AIChatView: View {
 
     private func loadConversation() {
         guard let convId = conversationId else { return }
-        let predicate = #Predicate<ChatConversation> { $0.id == convId }
-        conversation = try? context.fetch(FetchDescriptor(predicate: predicate)).first
+        let descriptor = FetchDescriptor<ChatConversation>()
+        conversation = try? context.fetch(descriptor).first { $0.id == convId }
     }
 
     private func sendMessage(_ text: String) {
@@ -149,12 +214,17 @@ struct AIChatView: View {
 
         guard let apiKey = KeychainManager.getAPIKey(for: config.id) else {
             alertType = .error
-            alertMessage = AIError.noAPIKey.localizedDescription
+            alertMessage = "未找到 API Key，请在设置 → AI 模型设置中重新配置"
             showAlert = true
             return
         }
 
-        guard let userId = appState.currentUserId, let uuid = UUID(uuidString: userId) else { return }
+        guard let userId = appState.currentUserId, let uuid = UUID(uuidString: userId) else {
+            alertType = .error
+            alertMessage = "用户未登录，请重新登录"
+            showAlert = true
+            return
+        }
 
         // Ensure conversation exists
         if conversation == nil {
@@ -178,9 +248,9 @@ struct AIChatView: View {
 
         Task {
             let service = LocalAIService(context: context)
-            let messages = sortedMessages
+            let currentMessages = sortedMessages
 
-            let stream = service.chat(messages: messages, config: config, apiKey: apiKey)
+            let stream = service.chat(messages: currentMessages, config: config, apiKey: apiKey)
 
             do {
                 for try await chunk in stream {
@@ -188,15 +258,21 @@ struct AIChatView: View {
                     scrollToBottom()
                 }
 
-                // Save assistant message
-                let assistantMsg = ChatMessage(role: .assistant, content: streamedContent)
-                assistantMsg.conversation = conversation
-                conversation?.messages.append(assistantMsg)
-                conversation?.updatedAt = Date()
-                try? context.save()
+                // Save assistant message if we got content
+                if !streamedContent.isEmpty {
+                    let assistantMsg = ChatMessage(role: .assistant, content: streamedContent)
+                    assistantMsg.conversation = conversation
+                    conversation?.messages.append(assistantMsg)
+                    conversation?.updatedAt = Date()
+                    try? context.save()
+                } else {
+                    alertType = .error
+                    alertMessage = "AI 未返回内容，请检查模型配置\n\(config.apiEndpoint)"
+                    showAlert = true
+                }
             } catch {
                 alertType = .error
-                alertMessage = error.localizedDescription
+                alertMessage = "AI 响应错误: \(error.localizedDescription)"
                 showAlert = true
             }
 
@@ -227,13 +303,23 @@ struct MessageBubble: View {
         HStack {
             if message.role == .user { Spacer(minLength: 60) }
 
-            VStack(alignment: message.role == .user ? .trailing : .leading, spacing: 4) {
-                Text(message.content)
-                    .font(.subheadline)
-                    .padding(12)
-                    .background(message.role == .user ? .blue : Color(.systemGray5))
-                    .foregroundStyle(message.role == .user ? .white : .primary)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
+            VStack(alignment: message.role == .user ? .trailing : .leading, spacing: FHSpacing.xs) {
+                Group {
+                    if message.role == .assistant {
+                        AutoSizingMarkdownView(markdown: message.content)
+                    } else {
+                        Text(message.content)
+                            .font(.subheadline)
+                    }
+                }
+                .padding(FHSpacing.md)
+                .background(
+                    message.role == .user
+                        ? AnyShapeStyle(FHGradients.userBubble)
+                        : AnyShapeStyle(Color(.systemGray5))
+                )
+                .foregroundStyle(message.role == .user ? .white : .primary)
+                .clipShape(RoundedRectangle(cornerRadius: FHRadius.large))
 
                 Text(message.createdAt, format: .dateTime.hour().minute())
                     .font(.caption2)
@@ -253,17 +339,16 @@ struct StreamingBubble: View {
         HStack {
             VStack(alignment: .leading) {
                 HStack(alignment: .bottom, spacing: 0) {
-                    Text(content)
-                        .font(.subheadline)
+                    AutoSizingMarkdownView(markdown: content)
                     if showCursor {
                         Text("▎")
                             .font(.subheadline)
-                            .foregroundStyle(.blue)
+                            .foregroundStyle(FHColors.primary)
                     }
                 }
-                .padding(12)
+                .padding(FHSpacing.md)
                 .background(Color(.systemGray5))
-                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .clipShape(RoundedRectangle(cornerRadius: FHRadius.large))
             }
             Spacer(minLength: 60)
         }
@@ -273,29 +358,36 @@ struct StreamingBubble: View {
     }
 }
 
+
+
 struct QuickPromptButton: View {
+    let icon: String
     let text: String
     let action: () -> Void
 
-    init(_ text: String, action: @escaping () -> Void) {
-        self.text = text
-        self.action = action
-    }
-
     var body: some View {
         Button(action: action) {
-            HStack {
+            HStack(spacing: FHSpacing.md) {
+                Image(systemName: icon)
+                    .font(.subheadline)
+                    .foregroundStyle(FHColors.aiPurple)
+                    .frame(width: 28, height: 28)
+                    .background(FHColors.aiPurple.opacity(0.1))
+                    .clipShape(Circle())
+
                 Text(text)
                     .font(.subheadline)
+                    .foregroundStyle(.primary)
                 Spacer()
                 Image(systemName: "arrow.right")
                     .font(.caption)
+                    .foregroundStyle(.secondary)
             }
-            .padding(12)
-            .background(Color(.systemGray6))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .padding(FHSpacing.md)
+            .background(FHColors.subtleGray)
+            .clipShape(RoundedRectangle(cornerRadius: FHRadius.medium))
         }
-        .buttonStyle(.plain)
-        .padding(.horizontal, 24)
+        .fhPressStyle()
+        .padding(.horizontal, FHSpacing.xxl)
     }
 }

@@ -30,22 +30,19 @@ final class LocalFamilyService: FamilyService {
     }
 
     func fetchGroups(userId: UUID) async throws -> [FamilyGroup] {
-        let predicate = #Predicate<FamilyMember> { $0.userId == userId }
-        let descriptor = FetchDescriptor(predicate: predicate)
-        let memberships = try context.fetch(descriptor)
+        let descriptor = FetchDescriptor<FamilyMember>()
+        let memberships = try context.fetch(descriptor).filter { $0.userId == userId }
         return memberships.compactMap(\.group)
     }
 
     func fetchGroup(id: UUID) async throws -> FamilyGroup? {
-        let predicate = #Predicate<FamilyGroup> { $0.id == id }
-        let descriptor = FetchDescriptor(predicate: predicate)
-        return try context.fetch(descriptor).first
+        let descriptor = FetchDescriptor<FamilyGroup>()
+        return try context.fetch(descriptor).first { $0.id == id }
     }
 
     func deleteGroup(id: UUID) async throws {
-        let predicate = #Predicate<FamilyGroup> { $0.id == id }
-        let descriptor = FetchDescriptor(predicate: predicate)
-        if let group = try context.fetch(descriptor).first {
+        let descriptor = FetchDescriptor<FamilyGroup>()
+        if let group = try context.fetch(descriptor).first(where: { $0.id == id }) {
             context.delete(group) // cascade deletes members
             try context.save()
         }
@@ -75,34 +72,28 @@ final class LocalFamilyService: FamilyService {
     }
 
     func removeMember(groupId: UUID, userId: UUID) async throws {
-        let predicate = #Predicate<FamilyMember> {
-            $0.userId == userId && $0.group?.id == groupId
-        }
-        let descriptor = FetchDescriptor(predicate: predicate)
-        if let member = try context.fetch(descriptor).first {
+        let descriptor = FetchDescriptor<FamilyMember>()
+        let members = try context.fetch(descriptor)
+        if let member = members.first(where: { $0.userId == userId && $0.group?.id == groupId }) {
             context.delete(member)
             try context.save()
         }
     }
 
     func getMembers(groupId: UUID) async throws -> [FamilyMember] {
-        let predicate = #Predicate<FamilyMember> { $0.group?.id == groupId }
-        let descriptor = FetchDescriptor(predicate: predicate)
-        return try context.fetch(descriptor)
+        let descriptor = FetchDescriptor<FamilyMember>()
+        return try context.fetch(descriptor).filter { $0.group?.id == groupId }
     }
 
     func getUserGroupCount(userId: UUID) async throws -> Int {
-        let predicate = #Predicate<FamilyMember> { $0.userId == userId }
-        let descriptor = FetchDescriptor(predicate: predicate)
-        return try context.fetchCount(descriptor)
+        let descriptor = FetchDescriptor<FamilyMember>()
+        return try context.fetch(descriptor).filter { $0.userId == userId }.count
     }
 
     func isAdmin(userId: UUID, groupId: UUID) async throws -> Bool {
-        let predicate = #Predicate<FamilyMember> {
-            $0.userId == userId && $0.group?.id == groupId && $0.role == .admin
-        }
-        let descriptor = FetchDescriptor(predicate: predicate)
-        return try context.fetchCount(descriptor) > 0
+        let descriptor = FetchDescriptor<FamilyMember>()
+        let members = try context.fetch(descriptor)
+        return members.contains { $0.userId == userId && $0.group?.id == groupId && $0.role == .admin }
     }
 
     func generateInviteCode(groupId: UUID) async throws -> String {

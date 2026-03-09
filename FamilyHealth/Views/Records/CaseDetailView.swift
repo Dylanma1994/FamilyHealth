@@ -3,6 +3,8 @@ import SwiftUI
 /// Medical case detail view
 struct CaseDetailView: View {
     let medicalCase: MedicalCase
+    @Environment(\.dismiss) private var dismiss
+    @Environment(ServiceContainer.self) private var services
     @State private var showDeleteConfirm = false
     @State private var showAlert = false
     @State private var alertType: SWAlertType = .info
@@ -10,10 +12,10 @@ struct CaseDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 16) {
+            VStack(spacing: FHSpacing.lg) {
                 // Diagnosis card
                 SWCard {
-                    VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: FHSpacing.md) {
                         SWSectionHeader("诊断信息")
 
                         if let hospital = medicalCase.hospitalName {
@@ -39,11 +41,11 @@ struct CaseDetailView: View {
                 // Symptoms
                 if !medicalCase.symptoms.isEmpty {
                     SWCard {
-                        VStack(alignment: .leading, spacing: 12) {
+                        VStack(alignment: .leading, spacing: FHSpacing.md) {
                             SWSectionHeader("症状")
-                            FlowLayout(spacing: 8) {
+                            FlowLayout(spacing: FHSpacing.sm) {
                                 ForEach(medicalCase.symptoms, id: \.self) { symptom in
-                                    SWBadge(symptom, color: .orange)
+                                    SWBadge(symptom, color: FHColors.caseOrange)
                                 }
                             }
                         }
@@ -53,7 +55,7 @@ struct CaseDetailView: View {
                 // Medications
                 if !medicalCase.medications.isEmpty {
                     SWCard {
-                        VStack(alignment: .leading, spacing: 12) {
+                        VStack(alignment: .leading, spacing: FHSpacing.md) {
                             SWSectionHeader("用药记录")
                             ForEach(medicalCase.medications) { med in
                                 HStack {
@@ -73,7 +75,7 @@ struct CaseDetailView: View {
                                     }
                                     Spacer()
                                     Image(systemName: "pills.fill")
-                                        .foregroundStyle(.blue)
+                                        .foregroundStyle(FHColors.primary)
                                 }
                                 if med.id != medicalCase.medications.last?.id {
                                     Divider()
@@ -86,7 +88,7 @@ struct CaseDetailView: View {
                 // Notes
                 if let notes = medicalCase.notes, !notes.isEmpty {
                     SWCard {
-                        VStack(alignment: .leading, spacing: 8) {
+                        VStack(alignment: .leading, spacing: FHSpacing.sm) {
                             SWSectionHeader("备注")
                             Text(notes)
                                 .font(.subheadline)
@@ -96,21 +98,22 @@ struct CaseDetailView: View {
                 }
 
                 // Actions
-                HStack(spacing: 12) {
+                HStack(spacing: FHSpacing.md) {
                     Button {
                         alertType = .info
-                        alertMessage = "AI 分析功能将在 M4 版本上线"
+                        alertMessage = "AI 分析功能开发中"
                         showAlert = true
                     } label: {
                         Label("AI 分析", systemImage: "sparkles")
                             .font(.subheadline.bold())
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .background(.blue)
+                            .padding(.vertical, FHSpacing.md)
+                            .background(FHGradients.accentButton)
                             .foregroundStyle(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .clipShape(RoundedRectangle(cornerRadius: FHRadius.medium))
                     }
                     .buttonStyle(.plain)
+                    .fhPressStyle()
 
                     Button(role: .destructive) {
                         showDeleteConfirm = true
@@ -118,12 +121,13 @@ struct CaseDetailView: View {
                         Label("删除", systemImage: "trash")
                             .font(.subheadline.bold())
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .background(.red.opacity(0.1))
-                            .foregroundStyle(.red)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .padding(.vertical, FHSpacing.md)
+                            .background(FHColors.danger.opacity(0.1))
+                            .foregroundStyle(FHColors.danger)
+                            .clipShape(RoundedRectangle(cornerRadius: FHRadius.medium))
                     }
                     .buttonStyle(.plain)
+                    .fhPressStyle()
                 }
             }
             .padding()
@@ -131,9 +135,22 @@ struct CaseDetailView: View {
         .navigationTitle(medicalCase.title)
         .navigationBarTitleDisplayMode(.inline)
         .confirmationDialog("确认删除", isPresented: $showDeleteConfirm) {
-            Button("删除病例", role: .destructive) {}
+            Button("删除病例", role: .destructive) {
+                Task { await deleteCase() }
+            }
         }
         .swAlert(isPresented: $showAlert, type: alertType, message: alertMessage)
+    }
+
+    private func deleteCase() async {
+        do {
+            try await services.caseService.deleteCase(id: medicalCase.id)
+            dismiss()
+        } catch {
+            alertType = .error
+            alertMessage = "删除失败: \(error.localizedDescription)"
+            showAlert = true
+        }
     }
 }
 

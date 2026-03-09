@@ -42,7 +42,7 @@ struct AddCaseView: View {
                 Section("症状") {
                     ForEach(symptoms, id: \.self) { symptom in
                         HStack {
-                            SWBadge(symptom, color: .orange)
+                            SWBadge(symptom, color: FHColors.caseOrange)
                             Spacer()
                             Button {
                                 symptoms.removeAll { $0 == symptom }
@@ -73,7 +73,7 @@ struct AddCaseView: View {
                                     medications.remove(at: index)
                                 } label: {
                                     Image(systemName: "trash")
-                                        .foregroundStyle(.red)
+                                        .foregroundStyle(FHColors.danger)
                                         .font(.caption)
                                 }
                             }

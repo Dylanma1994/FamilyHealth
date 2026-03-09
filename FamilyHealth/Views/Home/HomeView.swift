@@ -9,20 +9,41 @@ struct HomeView: View {
     @Query private var familyMembers: [FamilyMember]
     @State private var showUploadReport = false
     @State private var showAddCase = false
+    @State private var showAIChat = false
+    @State private var showScanner = false
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(spacing: FHSpacing.xl) {
                     headerSection
+                        .fhStaggerEntrance(index: 0)
                     statsGrid
                     quickActions
+                        .fhStaggerEntrance(index: 3)
                     recentSection
+                        .fhStaggerEntrance(index: 4)
                 }
                 .padding()
             }
-            .background(Color(.systemGroupedBackground))
+            .background(FHColors.groupedBackground)
             .sheet(isPresented: $showUploadReport) { UploadReportView() }
+            .sheet(isPresented: $showAIChat) {
+                NavigationStack {
+                    AIChatView(conversationId: nil)
+                        .toolbar {
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button("关闭") { showAIChat = false }
+                            }
+                        }
+                }
+            }
+            .sheet(isPresented: $showScanner) {
+                QRScannerView { code in
+                    showScanner = false
+                    handleScannedCode(code)
+                }
+            }
             .sheet(isPresented: $showAddCase) { AddCaseView() }
         }
     }
@@ -30,19 +51,19 @@ struct HomeView: View {
     // MARK: - Header
     private var headerSection: some View {
         HStack {
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: FHSpacing.xs) {
                 Text(greeting)
                     .font(.title.bold())
                 Text(appState.mode.displayName)
                     .font(.caption)
-                    .padding(.horizontal, 8)
+                    .padding(.horizontal, FHSpacing.sm)
                     .padding(.vertical, 2)
                     .background(.white.opacity(0.2))
                     .clipShape(Capsule())
             }
             Spacer()
             Circle()
-                .fill(.white.opacity(0.2))
+                .fill(.white.opacity(0.15))
                 .frame(width: 44, height: 44)
                 .overlay(
                     Image(systemName: "person.fill")
@@ -50,9 +71,10 @@ struct HomeView: View {
                 )
         }
         .padding()
-        .background(.blue.gradient)
+        .background(FHGradients.primaryHero)
         .foregroundStyle(.white)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: FHRadius.large))
+        .fhShadow(.medium)
     }
 
     private var greeting: String {
@@ -66,11 +88,15 @@ struct HomeView: View {
 
     // MARK: - Stats grid
     private var statsGrid: some View {
-        LazyVGrid(columns: [.init(), .init()], spacing: 12) {
-            StatCard(icon: "doc.text", title: "体检报告", value: "\(recentReports.count) 份", color: .blue)
-            StatCard(icon: "list.clipboard", title: "病例记录", value: "\(recentCases.count) 份", color: .orange)
-            StatCard(icon: "person.3", title: "家庭成员", value: memberCount, color: .green)
-            StatCard(icon: "calendar", title: "上次体检", value: lastCheckupDate, color: .purple)
+        LazyVGrid(columns: [.init(), .init()], spacing: FHSpacing.md) {
+            StatCard(icon: "doc.text", title: "体检报告", value: "\(recentReports.count) 份", color: FHColors.reportBlue)
+                .fhStaggerEntrance(index: 1)
+            StatCard(icon: "list.clipboard", title: "病例记录", value: "\(recentCases.count) 份", color: FHColors.caseOrange)
+                .fhStaggerEntrance(index: 1)
+            StatCard(icon: "person.3", title: "家庭成员", value: memberCount, color: FHColors.familyGreen)
+                .fhStaggerEntrance(index: 2)
+            StatCard(icon: "calendar", title: "上次体检", value: lastCheckupDate, color: FHColors.calendarPurp)
+                .fhStaggerEntrance(index: 2)
         }
     }
 
@@ -90,24 +116,28 @@ struct HomeView: View {
 
     // MARK: - Quick actions
     private var quickActions: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: FHSpacing.md) {
             SWSectionHeader("快捷操作")
-            HStack(spacing: 16) {
-                QuickActionButton(icon: "arrow.up.doc", title: "上传报告", color: .blue) {
+            HStack(spacing: FHSpacing.lg) {
+                QuickActionButton(icon: "arrow.up.doc", title: "上传报告", color: FHColors.reportBlue) {
                     showUploadReport = true
                 }
-                QuickActionButton(icon: "plus.circle", title: "录入病例", color: .green) {
+                QuickActionButton(icon: "plus.circle", title: "录入病例", color: FHColors.familyGreen) {
                     showAddCase = true
                 }
-                QuickActionButton(icon: "brain.head.profile", title: "AI 对话", color: .purple) {}
-                QuickActionButton(icon: "qrcode.viewfinder", title: "扫码加入", color: .orange) {}
+                QuickActionButton(icon: "brain.head.profile", title: "AI 对话", color: FHColors.aiPurple) {
+                    showAIChat = true
+                }
+                QuickActionButton(icon: "qrcode.viewfinder", title: "扫码加入", color: FHColors.caseOrange) {
+                    showScanner = true
+                }
             }
         }
     }
 
     // MARK: - Recent records
     private var recentSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: FHSpacing.md) {
             SWSectionHeader("最近记录")
 
             if recentReports.isEmpty && recentCases.isEmpty {
@@ -117,13 +147,14 @@ struct HomeView: View {
                     description: "点击上方「上传报告」开始管理健康数据",
                     actionTitle: "上传报告"
                 ) { showUploadReport = true }
+                .frame(maxWidth: .infinity)
             } else {
-                ForEach(recentReports.prefix(3)) { report in
+                ForEach(Array(recentReports.prefix(3).enumerated()), id: \.element.id) { idx, report in
                     NavigationLink {
                         ReportDetailView(report: report)
                     } label: {
                         RecentRecordRow(
-                            icon: "doc.text.fill", color: .blue,
+                            icon: "doc.text.fill", color: FHColors.reportBlue,
                             title: report.title,
                             subtitle: report.hospitalName ?? "",
                             date: report.reportDate
@@ -131,12 +162,12 @@ struct HomeView: View {
                     }
                     .buttonStyle(.plain)
                 }
-                ForEach(recentCases.prefix(3)) { medCase in
+                ForEach(Array(recentCases.prefix(3).enumerated()), id: \.element.id) { idx, medCase in
                     NavigationLink {
                         CaseDetailView(medicalCase: medCase)
                     } label: {
                         RecentRecordRow(
-                            icon: "list.clipboard.fill", color: .orange,
+                            icon: "list.clipboard.fill", color: FHColors.caseOrange,
                             title: medCase.title,
                             subtitle: medCase.diagnosis ?? "",
                             date: medCase.visitDate
@@ -145,6 +176,26 @@ struct HomeView: View {
                     .buttonStyle(.plain)
                 }
             }
+        }
+    }
+
+    // MARK: - QR Code Handling
+    private func handleScannedCode(_ code: String) {
+        guard let url = URL(string: code),
+              url.scheme == "familyhealth",
+              url.host == "invite",
+              let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+              let groupIdStr = components.queryItems?.first(where: { $0.name == "group" })?.value,
+              let groupId = UUID(uuidString: groupIdStr),
+              let userId = appState.currentUserId,
+              let uuid = UUID(uuidString: userId) else {
+            return
+        }
+        Task {
+            do {
+                try await services.familyService.addMember(
+                    groupId: groupId, userId: uuid, role: .member, invitedBy: uuid)
+            } catch {}
         }
     }
 }
@@ -158,11 +209,16 @@ struct StatCard: View {
     let color: Color
 
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.title2)
-                .foregroundStyle(color)
-            VStack(alignment: .leading) {
+        HStack(spacing: FHSpacing.md) {
+            ZStack {
+                RoundedRectangle(cornerRadius: FHRadius.small)
+                    .fill(color.opacity(0.12))
+                    .frame(width: 40, height: 40)
+                Image(systemName: icon)
+                    .font(.title3)
+                    .foregroundStyle(color)
+            }
+            VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -172,8 +228,9 @@ struct StatCard: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
-        .background(.background)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .background(FHColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: FHRadius.medium))
+        .fhShadow(.light)
     }
 }
 
@@ -185,12 +242,12 @@ struct QuickActionButton: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 8) {
+            VStack(spacing: FHSpacing.sm) {
                 Image(systemName: icon)
                     .font(.title2)
                     .foregroundStyle(color)
                     .frame(width: 48, height: 48)
-                    .background(color.opacity(0.12))
+                    .background(color.opacity(0.10))
                     .clipShape(Circle())
                 Text(title)
                     .font(.caption2)
@@ -198,7 +255,7 @@ struct QuickActionButton: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .buttonStyle(.plain)
+        .fhPressStyle()
     }
 }
 
@@ -210,9 +267,15 @@ struct RecentRecordRow: View {
     let date: Date
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: FHSpacing.md) {
+            // Left color bar accent
+            RoundedRectangle(cornerRadius: 2)
+                .fill(color)
+                .frame(width: 4, height: 40)
+
             Image(systemName: icon)
                 .foregroundStyle(color)
+
             VStack(alignment: .leading, spacing: 2) {
                 Text(title).font(.subheadline.bold())
                 if !subtitle.isEmpty {
@@ -225,7 +288,8 @@ struct RecentRecordRow: View {
                 .foregroundStyle(.secondary)
         }
         .padding()
-        .background(.background)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .background(FHColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: FHRadius.medium))
+        .fhShadow(.light)
     }
 }

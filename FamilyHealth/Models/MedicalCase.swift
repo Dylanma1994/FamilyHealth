@@ -99,3 +99,74 @@ final class CaseAttachment {
         self.remoteURL = remoteURL
     }
 }
+
+// MARK: - Codable DTOs for Remote API
+
+/// DTO for serializing MedicalCase to/from JSON (remote mode).
+struct MedicalCaseDTO: Codable {
+    let id: UUID
+    let userId: UUID
+    let uploaderId: UUID
+    let title: String
+    let hospitalName: String?
+    let doctorName: String?
+    let visitDate: Date
+    let diagnosis: String?
+    let symptoms: [String]
+    let notes: String?
+    let createdAt: Date
+    let updatedAt: Date
+    let medications: [MedicationDTO]?
+
+    enum CodingKeys: String, CodingKey {
+        case id, title, diagnosis, symptoms, notes, medications
+        case userId = "user_id"
+        case uploaderId = "uploader_id"
+        case hospitalName = "hospital_name"
+        case doctorName = "doctor_name"
+        case visitDate = "visit_date"
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+    }
+}
+
+/// DTO for serializing Medication to/from JSON.
+struct MedicationDTO: Codable {
+    let id: UUID
+    let name: String
+    let dosage: String?
+    let frequency: String?
+    let startDate: Date?
+    let endDate: Date?
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, dosage, frequency
+        case startDate = "start_date"
+        case endDate = "end_date"
+    }
+}
+
+extension MedicalCase {
+    /// Convert to DTO for remote API transmission.
+    func toDTO() -> MedicalCaseDTO {
+        MedicalCaseDTO(
+            id: id, userId: userId, uploaderId: uploaderId,
+            title: title, hospitalName: hospitalName,
+            doctorName: doctorName, visitDate: visitDate,
+            diagnosis: diagnosis, symptoms: symptoms,
+            notes: notes, createdAt: createdAt, updatedAt: updatedAt,
+            medications: medications.map { $0.toDTO() }
+        )
+    }
+}
+
+extension Medication {
+    /// Convert to DTO for remote API transmission.
+    func toDTO() -> MedicationDTO {
+        MedicationDTO(
+            id: id, name: name,
+            dosage: dosage, frequency: frequency,
+            startDate: startDate, endDate: endDate
+        )
+    }
+}

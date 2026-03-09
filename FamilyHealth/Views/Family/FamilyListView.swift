@@ -6,6 +6,7 @@ struct FamilyListView: View {
     @Environment(ServiceContainer.self) private var services
     @Query private var allMembers: [FamilyMember]
     @State private var showScanner = false
+    @State private var showCreateGroup = false
     @State private var showAlert = false
     @State private var alertType: SWAlertType = .info
     @State private var alertMessage = ""
@@ -29,10 +30,15 @@ struct FamilyListView: View {
                         title: "创建家庭组",
                         description: "创建家庭组，管理全家人的健康数据",
                         actionTitle: "创建家庭组"
-                    ) {}
+                    ) {
+                        showCreateGroup = true
+                    }
                 } else {
                     groupList
                 }
+            }
+            .navigationDestination(isPresented: $showCreateGroup) {
+                CreateFamilyGroupView()
             }
             .navigationTitle("家庭")
             .toolbar {
@@ -74,7 +80,7 @@ struct FamilyListView: View {
                     FamilyGroupDetailView(group: group)
                 } label: {
                     HStack(spacing: 12) {
-                        SWAvatar(name: group.name, size: 48, color: .blue)
+                        SWAvatar(name: group.name, size: 48, color: FHColors.primary)
 
                         VStack(alignment: .leading, spacing: 4) {
                             Text(group.name).font(.headline)
@@ -257,7 +263,7 @@ struct FamilyGroupDetailView: View {
     private func memberRow(_ member: FamilyMember) -> some View {
         HStack {
             SWAvatar(name: "U\(member.userId.uuidString.prefix(2))", size: 40,
-                     color: member.role == .admin ? .blue : .gray)
+                     color: member.role == .admin ? FHColors.primary : FHColors.info)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("用户 \(member.userId.uuidString.prefix(8))")
@@ -269,7 +275,7 @@ struct FamilyGroupDetailView: View {
             Spacer()
 
             SWBadge(member.role.displayName,
-                    color: member.role == .admin ? .blue : .gray)
+                    color: member.role == .admin ? FHColors.primary : FHColors.info)
         }
     }
 

@@ -31,21 +31,23 @@ struct SWEmptyState: View {
             // Animated icon
             ZStack {
                 Circle()
-                    .fill(.blue.opacity(0.08))
+                    .fill(FHColors.primary.opacity(0.08))
                     .frame(width: 120, height: 120)
                     .scaleEffect(isAnimating ? 1.05 : 0.95)
 
                 Circle()
-                    .fill(.blue.opacity(0.05))
+                    .fill(FHColors.primary.opacity(0.05))
                     .frame(width: 100, height: 100)
 
                 Image(systemName: icon)
                     .font(.system(size: 44))
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(FHColors.primary)
                     .symbolRenderingMode(.hierarchical)
             }
+            .scaleEffect(isAnimating ? 1.0 : 0.85)
+            .opacity(isAnimating ? 1.0 : 0.0)
             .onAppear {
-                withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) {
+                withAnimation(.easeOut(duration: 0.5)) {
                     isAnimating = true
                 }
             }
@@ -67,7 +69,7 @@ struct SWEmptyState: View {
                         .font(.subheadline.bold())
                         .padding(.horizontal, 24)
                         .padding(.vertical, 12)
-                        .background(.blue)
+                        .background(FHGradients.accentButton)
                         .foregroundStyle(.white)
                         .clipShape(Capsule())
                 }
@@ -115,9 +117,9 @@ struct SWCard<Content: View>: View {
     var body: some View {
         content()
             .padding()
-            .background(.background)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
+            .background(FHColors.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: FHRadius.large))
+            .fhShadow(.light)
     }
 }
 
@@ -126,7 +128,7 @@ struct SWBadge: View {
     let text: String
     let color: Color
 
-    init(_ text: String, color: Color = .blue) {
+    init(_ text: String, color: Color = FHColors.primary) {
         self.text = text
         self.color = color
     }

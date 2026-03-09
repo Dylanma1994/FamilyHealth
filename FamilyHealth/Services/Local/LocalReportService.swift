@@ -15,18 +15,16 @@ final class LocalReportService: ReportService {
     }
 
     func fetchReports(userId: UUID) async throws -> [HealthReport] {
-        let predicate = #Predicate<HealthReport> { $0.userId == userId }
-        let descriptor = FetchDescriptor(
-            predicate: predicate,
+        var descriptor = FetchDescriptor<HealthReport>(
             sortBy: [SortDescriptor(\.reportDate, order: .reverse)]
         )
-        return try context.fetch(descriptor)
+        descriptor.fetchLimit = 200
+        return try context.fetch(descriptor).filter { $0.userId == userId }
     }
 
     func fetchReport(id: UUID) async throws -> HealthReport? {
-        let predicate = #Predicate<HealthReport> { $0.id == id }
-        let descriptor = FetchDescriptor(predicate: predicate)
-        return try context.fetch(descriptor).first
+        let descriptor = FetchDescriptor<HealthReport>()
+        return try context.fetch(descriptor).first { $0.id == id }
     }
 
     func updateReport(_ report: HealthReport) async throws {
@@ -35,33 +33,25 @@ final class LocalReportService: ReportService {
     }
 
     func deleteReport(id: UUID) async throws {
-        let predicate = #Predicate<HealthReport> { $0.id == id }
-        let descriptor = FetchDescriptor(predicate: predicate)
-        if let report = try context.fetch(descriptor).first {
+        let descriptor = FetchDescriptor<HealthReport>()
+        if let report = try context.fetch(descriptor).first(where: { $0.id == id }) {
             context.delete(report)
             try context.save()
         }
     }
 
     func searchReports(query: String, userId: UUID?) async throws -> [HealthReport] {
-        let predicate: Predicate<HealthReport>
-        if let userId {
-            predicate = #Predicate<HealthReport> {
-                $0.userId == userId && (
-                    $0.title.localizedStandardContains(query) ||
-                    ($0.hospitalName?.localizedStandardContains(query) ?? false)
-                )
-            }
-        } else {
-            predicate = #Predicate<HealthReport> {
-                $0.title.localizedStandardContains(query) ||
-                ($0.hospitalName?.localizedStandardContains(query) ?? false)
-            }
-        }
-        let descriptor = FetchDescriptor(
-            predicate: predicate,
+        var descriptor = FetchDescriptor<HealthReport>(
             sortBy: [SortDescriptor(\.reportDate, order: .reverse)]
         )
-        return try context.fetch(descriptor)
+        descriptor.fetchLimit = 200
+        let all = try context.fetch(descriptor)
+        return all.filter { report in
+            let matchesUser = userId == nil || report.userId == userId
+            let matchesQuery = query.isEmpty ||
+                report.title.localizedStandardContains(query) ||
+                (report.hospitalName?.localizedStandardContains(query) ?? false)
+            return matchesUser && matchesQuery
+        }
     }
 }

@@ -6,6 +6,7 @@ struct RecordsView: View {
     @State private var searchText = ""
     @State private var showUploadReport = false
     @State private var showAddCase = false
+    @State private var fabScale: CGFloat = 1.0
 
     var body: some View {
         NavigationStack {
@@ -19,14 +20,14 @@ struct RecordsView: View {
                 .padding()
 
                 // Search bar
-                HStack {
+                HStack(spacing: FHSpacing.sm) {
                     Image(systemName: "magnifyingglass")
                         .foregroundStyle(.secondary)
                     TextField("搜索", text: $searchText)
                 }
-                .padding(10)
-                .background(Color(.systemGray6))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .padding(FHSpacing.md)
+                .background(FHColors.subtleGray)
+                .clipShape(RoundedRectangle(cornerRadius: FHRadius.medium))
                 .padding(.horizontal)
 
                 // Content
@@ -38,7 +39,7 @@ struct RecordsView: View {
             }
             .navigationTitle("健康档案")
             .overlay(alignment: .bottomTrailing) {
-                // FAB button
+                // FAB button with shadow + animation
                 Button {
                     if selectedTab == 0 {
                         showUploadReport = true
@@ -50,12 +51,19 @@ struct RecordsView: View {
                         .font(.title2.bold())
                         .foregroundStyle(.white)
                         .frame(width: 56, height: 56)
-                        .background(.blue)
+                        .background(FHGradients.accentButton)
                         .clipShape(Circle())
-                        .shadow(color: .blue.opacity(0.3), radius: 8, y: 4)
+                        .fhShadow(.heavy)
+                        .scaleEffect(fabScale)
                 }
-                .padding(.trailing, 20)
-                .padding(.bottom, 20)
+                .fhPressStyle()
+                .padding(.trailing, FHSpacing.xl)
+                .padding(.bottom, FHSpacing.xl)
+                .onAppear {
+                    withAnimation(FHAnimation.gentlePulse) {
+                        fabScale = 1.06
+                    }
+                }
             }
             .sheet(isPresented: $showUploadReport) {
                 UploadReportView()
@@ -104,7 +112,7 @@ struct ReportRow: View {
     let report: HealthReport
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: FHSpacing.md) {
             // Thumbnail
             Group {
                 if let firstFile = report.files.first,
@@ -115,15 +123,15 @@ struct ReportRow: View {
                         .scaledToFill()
                 } else {
                     Image(systemName: "doc.text.fill")
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(FHColors.reportBlue)
                         .font(.title3)
                 }
             }
             .frame(width: 56, height: 56)
-            .background(Color(.systemGray6))
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .background(FHColors.subtleGray)
+            .clipShape(RoundedRectangle(cornerRadius: FHRadius.small))
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: FHSpacing.xs) {
                 Text(report.title)
                     .font(.subheadline.bold())
                     .lineLimit(1)
@@ -132,16 +140,21 @@ struct ReportRow: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-                SWBadge(report.reportType.displayName)
+                SWBadge(report.reportType.displayName, color: FHColors.reportBlue)
             }
 
             Spacer()
 
-            Text(report.reportDate, format: .dateTime.year().month().day())
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            VStack(alignment: .trailing, spacing: FHSpacing.xs) {
+                Text(report.reportDate, format: .dateTime.year().month().day())
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Image(systemName: "chevron.right")
+                    .font(.caption2)
+                    .foregroundStyle(.quaternary)
+            }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, FHSpacing.xs)
     }
 }
 
@@ -182,10 +195,10 @@ struct CaseRow: View {
     let medicalCase: MedicalCase
 
     var body: some View {
-        HStack(spacing: 12) {
-            SWAvatar(name: medicalCase.title, size: 44, color: .orange)
+        HStack(spacing: FHSpacing.md) {
+            SWAvatar(name: medicalCase.title, size: 44, color: FHColors.caseOrange)
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: FHSpacing.xs) {
                 Text(medicalCase.title)
                     .font(.subheadline.bold())
                 if let diagnosis = medicalCase.diagnosis {
@@ -195,9 +208,9 @@ struct CaseRow: View {
                         .lineLimit(1)
                 }
                 if !medicalCase.symptoms.isEmpty {
-                    HStack(spacing: 4) {
+                    HStack(spacing: FHSpacing.xs) {
                         ForEach(medicalCase.symptoms.prefix(3), id: \.self) { s in
-                            SWBadge(s, color: .orange)
+                            SWBadge(s, color: FHColors.caseOrange)
                         }
                     }
                 }
@@ -205,10 +218,15 @@ struct CaseRow: View {
 
             Spacer()
 
-            Text(medicalCase.visitDate, format: .dateTime.year().month().day())
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            VStack(alignment: .trailing, spacing: FHSpacing.xs) {
+                Text(medicalCase.visitDate, format: .dateTime.year().month().day())
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Image(systemName: "chevron.right")
+                    .font(.caption2)
+                    .foregroundStyle(.quaternary)
+            }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, FHSpacing.xs)
     }
 }

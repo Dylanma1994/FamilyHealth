@@ -18,7 +18,7 @@ final class User {
         id: UUID = UUID(),
         phone: String,
         name: String,
-        gender: Gender = .other,
+        gender: Gender = .male,
         birthDate: Date? = nil,
         height: Double? = nil,
         weight: Double? = nil,
@@ -39,13 +39,11 @@ final class User {
     enum Gender: String, Codable, CaseIterable {
         case male
         case female
-        case other
 
         var displayName: String {
             switch self {
             case .male: return String(localized: "男")
             case .female: return String(localized: "女")
-            case .other: return String(localized: "其他")
             }
         }
     }

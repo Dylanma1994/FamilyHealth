@@ -36,24 +36,46 @@ struct AIChatListView: View {
     }
 
     private var noConfigView: some View {
-        SWEmptyState(
-            icon: "brain.head.profile",
-            title: "配置 AI 模型",
-            description: "使用 AI 功能前，请先在设置中配置 API 地址和 API Key",
-            actionTitle: "前往设置"
-        ) {}
+        VStack {
+            SWEmptyState(
+                icon: "brain.head.profile",
+                title: "配置 AI 模型",
+                description: "使用 AI 功能前，请先在设置中配置 API 地址和 API Key"
+            )
+            NavigationLink {
+                AIModelSettingsView()
+            } label: {
+                Text("前往设置")
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(FHGradients.accentButton)
+                    .clipShape(RoundedRectangle(cornerRadius: FHRadius.medium))
+            }
+            .padding(.horizontal, FHSpacing.xxl)
+        }
     }
 
     private var emptyView: some View {
-        NavigationLink {
-            AIChatView(conversationId: nil)
-        } label: {
+        VStack {
             SWEmptyState(
                 icon: "bubble.left.and.bubble.right",
                 title: "开始对话",
-                description: "与 AI 健康助手对话，获取专业的健康分析和建议",
-                actionTitle: "新建对话"
-            ) {}
+                description: "与 AI 健康助手对话，获取专业的健康分析和建议"
+            )
+            NavigationLink {
+                AIChatView(conversationId: nil)
+            } label: {
+                Text("新建对话")
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(FHGradients.accentButton)
+                    .clipShape(RoundedRectangle(cornerRadius: FHRadius.medium))
+            }
+            .padding(.horizontal, FHSpacing.xxl)
         }
     }
 
@@ -64,7 +86,7 @@ struct AIChatListView: View {
                     AIChatView(conversationId: conv.id)
                 } label: {
                     HStack(spacing: 12) {
-                        SWAvatar(name: conv.title ?? "AI", size: 44, color: .purple)
+                        SWAvatar(name: conv.title ?? "AI", size: 44, color: FHColors.aiPurple)
                         VStack(alignment: .leading, spacing: 4) {
                             HStack {
                                 Text(conv.title ?? "新对话")
@@ -75,7 +97,7 @@ struct AIChatListView: View {
                                     .foregroundStyle(.secondary)
                             }
                             if let model = conv.modelName {
-                                SWBadge(model, color: .purple)
+                                SWBadge(model, color: FHColors.aiPurple)
                             }
                             Text("\(conv.messages.count) 条消息")
                                 .font(.caption)

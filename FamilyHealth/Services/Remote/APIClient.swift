@@ -12,7 +12,7 @@ actor APIClient {
 
     func setToken(_ token: String) {
         self.token = token
-        KeychainManager.saveAuthToken(token)
+        try? KeychainManager.saveAuthToken(token)
     }
 
     // MARK: - Execute

@@ -1,6 +1,7 @@
 import SwiftUI
 import PhotosUI
 import SwiftData
+import UniformTypeIdentifiers
 
 /// Multi-step report upload flow
 struct UploadReportView: View {
@@ -22,6 +23,8 @@ struct UploadReportView: View {
     @State private var showAlert = false
     @State private var alertType: SWAlertType = .success
     @State private var alertMessage = ""
+    @State private var showFileImporter = false
+    @State private var pdfFileNames: [String] = []
 
     private let steps = ["选择文件", "填写信息", "确认保存"]
 
@@ -29,7 +32,7 @@ struct UploadReportView: View {
         NavigationStack {
             VStack(spacing: 0) {
                 SWStepper(steps: steps, currentStep: currentStep)
-                    .padding(.vertical, 16)
+                    .padding(.vertical, FHSpacing.lg)
 
                 TabView(selection: $currentStep) {
                     step1FileSelection.tag(0)
@@ -57,7 +60,7 @@ struct UploadReportView: View {
 
     private var step1FileSelection: some View {
         ScrollView {
-            VStack(spacing: 20) {
+            VStack(spacing: FHSpacing.xl) {
                 // Photo picker
                 PhotosPicker(
                     selection: $selectedPhotos,
@@ -67,7 +70,7 @@ struct UploadReportView: View {
                     VStack(spacing: 12) {
                         Image(systemName: "arrow.up.doc")
                             .font(.system(size: 40))
-                            .foregroundStyle(.blue)
+                            .foregroundStyle(FHColors.primary)
                         Text("点击选择报告图片")
                             .font(.headline)
                         Text("支持从相册选择，最多 10 张")
@@ -77,9 +80,9 @@ struct UploadReportView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 40)
                     .background(
-                        RoundedRectangle(cornerRadius: 16)
+                        RoundedRectangle(cornerRadius: FHRadius.large)
                             .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [8]))
-                            .foregroundStyle(.blue.opacity(0.3))
+                            .foregroundStyle(FHColors.primary.opacity(0.3))
                     )
                 }
                 .onChange(of: selectedPhotos) { _, newItems in
@@ -88,17 +91,20 @@ struct UploadReportView: View {
 
                 // Selected image preview
                 if !imageData.isEmpty {
-                    SWSectionHeader("已选 \(imageData.count) 张")
-                    LazyVGrid(columns: [.init(), .init(), .init()], spacing: 8) {
+                    SWSectionHeader("已选 \(imageData.count) 个文件")
+                    LazyVGrid(columns: [.init(), .init(), .init()], spacing: FHSpacing.sm) {
                         ForEach(imageData.indices, id: \.self) { index in
                             if let uiImage = UIImage(data: imageData[index]) {
                                 Image(uiImage: uiImage)
                                     .resizable()
                                     .scaledToFill()
                                     .frame(height: 100)
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                    .clipShape(RoundedRectangle(cornerRadius: FHRadius.small))
                                     .overlay(alignment: .topTrailing) {
                                         Button {
+                                            if index < pdfFileNames.count {
+                                                pdfFileNames.remove(at: max(0, index - (imageData.count - pdfFileNames.count)))
+                                            }
                                             imageData.remove(at: index)
                                         } label: {
                                             Image(systemName: "xmark.circle.fill")
@@ -106,8 +112,79 @@ struct UploadReportView: View {
                                         }
                                         .padding(4)
                                     }
+                            } else {
+                                // PDF file placeholder
+                                VStack(spacing: 4) {
+                                    Image(systemName: "doc.fill")
+                                        .font(.title)
+                                        .foregroundStyle(FHColors.danger)
+                                    Text("PDF")
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                }
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 100)
+                                .background(FHColors.subtleGray)
+                                .clipShape(RoundedRectangle(cornerRadius: FHRadius.small))
+                                .overlay(alignment: .topTrailing) {
+                                    Button {
+                                        imageData.remove(at: index)
+                                    } label: {
+                                        Image(systemName: "xmark.circle.fill")
+                                            .foregroundStyle(.white, .red)
+                                    }
+                                    .padding(4)
+                                }
                             }
                         }
+                    }
+                }
+
+                // PDF file picker button
+                Button {
+                    showFileImporter = true
+                } label: {
+                    HStack {
+                        Image(systemName: "doc.badge.plus")
+                            .font(.title3)
+                            .foregroundStyle(FHColors.caseOrange)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("从文件导入 PDF")
+                                .font(.subheadline.bold())
+                                .foregroundStyle(.primary)
+                            Text("支持 PDF 格式的体检报告")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding()
+                    .background(FHColors.cardBackground)
+                    .clipShape(RoundedRectangle(cornerRadius: FHRadius.medium))
+                    .fhShadow(.light)
+                }
+                .fhPressStyle()
+                .fileImporter(
+                    isPresented: $showFileImporter,
+                    allowedContentTypes: [.pdf],
+                    allowsMultipleSelection: true
+                ) { result in
+                    switch result {
+                    case .success(let urls):
+                        for url in urls {
+                            guard url.startAccessingSecurityScopedResource() else { continue }
+                            defer { url.stopAccessingSecurityScopedResource() }
+                            if let data = try? Data(contentsOf: url) {
+                                imageData.append(data)
+                                pdfFileNames.append(url.lastPathComponent)
+                            }
+                        }
+                    case .failure(let error):
+                        alertType = .error
+                        alertMessage = "导入失败: \(error.localizedDescription)"
+                        showAlert = true
                     }
                 }
             }
@@ -148,7 +225,7 @@ struct UploadReportView: View {
 
     private var step3Confirm: some View {
         ScrollView {
-            VStack(spacing: 16) {
+            VStack(spacing: FHSpacing.lg) {
                 SWCard {
                     VStack(alignment: .leading, spacing: 12) {
                         HStack {
@@ -183,14 +260,14 @@ struct UploadReportView: View {
 
                         // Thumbnail row
                         ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 8) {
+                            HStack(spacing: FHSpacing.sm) {
                                 ForEach(imageData.indices, id: \.self) { index in
                                     if let uiImage = UIImage(data: imageData[index]) {
                                         Image(uiImage: uiImage)
                                             .resizable()
                                             .scaledToFill()
                                             .frame(width: 60, height: 60)
-                                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                                            .clipShape(RoundedRectangle(cornerRadius: FHRadius.small))
                                     }
                                 }
                             }
@@ -205,7 +282,7 @@ struct UploadReportView: View {
     // MARK: - Bottom Buttons
 
     private var bottomButtons: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: FHSpacing.lg) {
             if currentStep > 0 {
                 Button {
                     withAnimation { currentStep -= 1 }
@@ -214,10 +291,11 @@ struct UploadReportView: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color(.systemGray5))
+                        .background(FHColors.subtleGray)
                         .foregroundStyle(.primary)
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                        .clipShape(RoundedRectangle(cornerRadius: FHRadius.medium))
                 }
+                .fhPressStyle()
             }
 
             Button {
@@ -235,14 +313,15 @@ struct UploadReportView: View {
                         Text(currentStep < steps.count - 1 ? "下一步" : "保存")
                     }
                 }
-                .font(.headline)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(nextEnabled ? .blue : .gray)
-                .foregroundStyle(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 14))
-            }
-            .disabled(!nextEnabled || isSaving)
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(nextEnabled ? FHGradients.accentButton : LinearGradient(colors: [.gray], startPoint: .leading, endPoint: .trailing))
+                    .foregroundStyle(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: FHRadius.medium))
+                }
+                .disabled(!nextEnabled || isSaving)
+                .fhPressStyle()
         }
         .padding()
     }
@@ -283,21 +362,28 @@ struct UploadReportView: View {
             notes: notes.isEmpty ? nil : notes
         )
 
-        // Save images as report files
+        // Save files and extract text
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let reportsDir = documentsURL.appendingPathComponent("reports/\(report.id.uuidString)", isDirectory: true)
         try? FileManager.default.createDirectory(at: reportsDir, withIntermediateDirectories: true)
 
         for (index, data) in imageData.enumerated() {
-            let fileName = "image_\(index).jpg"
+            // Detect file type
+            let isPDF = data.count >= 5 && data.prefix(5).elementsEqual([0x25, 0x50, 0x44, 0x46, 0x2D])
+            let fileType: ReportFile.FileType = isPDF ? .pdf : .image
+            let fileName = isPDF ? "file_\(index).pdf" : "image_\(index).jpg"
             let filePath = reportsDir.appendingPathComponent(fileName)
             try? data.write(to: filePath)
 
+            // Extract text from file
+            let extractedText = await TextExtractor.extractText(from: data)
+
             let file = ReportFile(
-                fileType: .image,
+                fileType: fileType,
                 localPath: filePath.path,
                 fileName: fileName,
-                fileSize: Int64(data.count)
+                fileSize: Int64(data.count),
+                ocrText: extractedText
             )
             file.report = report
             report.files.append(file)

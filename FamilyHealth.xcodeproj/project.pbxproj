@@ -1,0 +1,663 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		016B22695245F8C5C0816F62 /* SWStepper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CD507F611063A1FD0E7285 /* SWStepper.swift */; };
+		057927F4DD8B9EAA56287A11 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43883EA426A1CDB788C945F /* HomeViewModel.swift */; };
+		0A6197B55BBB28866131E1B4 /* SWAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = DED2F08D042ACC666E07A5B8 /* SWAlert.swift */; };
+		1832288F069F7594E32D6D7F /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC2586C409B2DD947A44306 /* User.swift */; };
+		1C202837C385CDEEE3F807B4 /* HealthReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90DB2B8F3E97FC035B32BD75 /* HealthReport.swift */; };
+		24DFED3FF107C215C3C0233B /* ServiceContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49CFAF31F4FE6BD02E444BB /* ServiceContainer.swift */; };
+		297039BB193274A163A92ED7 /* MedicalCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59FAFFC15CA55EB9A6AA042E /* MedicalCase.swift */; };
+		2A93E43B98E20581B729C902 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297FAFF411A24D61DB139F53 /* RootView.swift */; };
+		300A15D0D7575334F431D316 /* AIChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 981CFA5ACF871A3DA9E9D1CC /* AIChatView.swift */; };
+		30B7F2C5BC27BDEEE872E550 /* OpenAIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40CB71E9B1A070E23B60196 /* OpenAIClient.swift */; };
+		34188312F1D1636FAA67DB8A /* RemoteServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 827FA29813DF7FC533C47A57 /* RemoteServices.swift */; };
+		3A5E23887E80A68043247BFF /* QRInviteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 441E1D7337EB4DACDB593BBE /* QRInviteView.swift */; };
+		3F3BE59B34BD7D73DA99334C /* SWComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5525178E0299A718840F0226 /* SWComponents.swift */; };
+		B4ED937C62EF4C23B274582C /* MarkdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A187FCD778E425D8D9B7D8E /* MarkdownView.swift */; };
+		440066F2A1A5B292461BEF41 /* AIModelConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35CB86173588BB1921FDB189 /* AIModelConfig.swift */; };
+		4CF3E5D8C2E863568EAE7774 /* LocalCaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE8F01F126B067DFDB31557 /* LocalCaseService.swift */; };
+		4F306C207F582D368ABEBA1B /* CaseDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 143652190B4AA6C922C5967E /* CaseDetailView.swift */; };
+		50AFFF8C7747ADF7E7DE2DE0 /* SWShimmer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E198161FF61448D0CB8B2A95 /* SWShimmer.swift */; };
+		53E7DF1AEC1ED047955859A0 /* LocalReportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3E458836CDA2F874CF5ADCF /* LocalReportService.swift */; };
+		54E9D0F621B7D59A53857D9A /* FamilyGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B64F9AB652E60C68860F99F /* FamilyGroup.swift */; };
+		6698B671E1961AE5AF3B4C1F /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6D0EA8BE9FC1389B6D41D81 /* MainTabView.swift */; };
+		67C8851DCB6A88D49380AC90 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 737D625C85C187AA720CADEA /* HomeView.swift */; };
+		6C278FC95C5B4628FA471982 /* SWLoading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CAB730FB203ACAC6463C32C /* SWLoading.swift */; };
+		856A2911A6F0F01D272C9A9A /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2AE8E53BC69C94620A5BE3 /* KeychainManager.swift */; };
+		62DDD6AD03384429A1354F14 /* TextExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C67C92AA9E64D3A8223BE28 /* TextExtractor.swift */; };
+		8BF7440C76DF5F4C22CCE9F8 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE14140F52E38AE28C40CB39 /* APIClient.swift */; };
+		8F3CBC4683D1CFF43FD8F935 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F3D01A3BB55627DBB1D3E9 /* SettingsView.swift */; };
+		9351270A26159AFFA843F863 /* AddCaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 608ACC1843AA65819DF52163 /* AddCaseView.swift */; };
+		97F9AD342F074873E350F22D /* RecordsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 154D57CE075DEA26B032A486 /* RecordsViewModel.swift */; };
+		99720E06E017DE91CB9E4E5D /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FB7AC35F7676A09FAE34D80 /* OnboardingView.swift */; };
+		9D8E4F15D2CA334390627BB2 /* ReportDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B0311508079651AE637B50F /* ReportDetailView.swift */; };
+		9DD6828903410CCBE02C9485 /* QRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB5DB2D83D5BE5954669D17 /* QRCodeGenerator.swift */; };
+		A359D3F2A16DB92C3E13CF85 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EC256FE648C88F748577CD6 /* AppState.swift */; };
+		ACECB0F6FC0465411CF0B1A8 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE35791CEDFDBEA11A4F2A94 /* LoginView.swift */; };
+		AE94965B245AD6BA496055AE /* FamilyListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC7FA88D76849D79C830AC20 /* FamilyListView.swift */; };
+		B711295983399617BE853BF5 /* ServiceProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C31FBD5AB3ABB6DAA26023 /* ServiceProtocols.swift */; };
+		B813DF145E0C1ADD319DEEFF /* UploadReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0E537C26CDC9EE2D34E034A /* UploadReportView.swift */; };
+		BB3932531BF17D74F78512BB /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF316F12DCFE7656B95A49DB /* DesignSystem.swift */; };
+		BD742930DD96D8D29671F7FF /* AIChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AF467CABE1781936179D447 /* AIChatViewModel.swift */; };
+		C4E2EC76A7C4B9346D32050B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1ACEA59F7CF933452663FDC4 /* Localizable.strings */; };
+		C64E7B2C9BBE99431FD376D7 /* LocalFamilyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC559FD8173481B63F0DF4CF /* LocalFamilyService.swift */; };
+		D8DF3CCF8AA004D609E94759 /* LocalAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E374ED52155D0E527C9BC21 /* LocalAuthService.swift */; };
+		DA215046DD14B6DAC8B08095 /* AIChatListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D859F3F049441392947943 /* AIChatListView.swift */; };
+		DA8A23F47D8BCEFB956843DA /* QRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6088B4FB02E8AD09FB5D03 /* QRScannerView.swift */; };
+		DD7C1362E363DAB760B5E23D /* FamilyHealthApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14A9060B820FF1C0912492B7 /* FamilyHealthApp.swift */; };
+		47F93B10FC494642B5853D8D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1447C8418AC2486F8A3A479B /* Assets.xcassets */; };
+		DD9D02DBC3D4F13DE28B0AE6 /* RecordsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ADFD2577F67AE810E1A26C4 /* RecordsView.swift */; };
+		E0A3C592E1E4DB5C7AB27AA4 /* LocalAIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 769E649837AB088F6097DFD7 /* LocalAIService.swift */; };
+		E40744D3355EED321583E681 /* ChatConversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4538966094192A67E6AFC4C /* ChatConversation.swift */; };
+		F5F38793A47662638F191C0D /* EditReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B496EA313056D88998FD753 /* EditReportView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		02F3D01A3BB55627DBB1D3E9 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		143652190B4AA6C922C5967E /* CaseDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaseDetailView.swift; sourceTree = "<group>"; };
+		14A9060B820FF1C0912492B7 /* FamilyHealthApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyHealthApp.swift; sourceTree = "<group>"; };
+		1447C8418AC2486F8A3A479B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		154D57CE075DEA26B032A486 /* RecordsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsViewModel.swift; sourceTree = "<group>"; };
+		297FAFF411A24D61DB139F53 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		2CB5DB2D83D5BE5954669D17 /* QRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeGenerator.swift; sourceTree = "<group>"; };
+		35CB86173588BB1921FDB189 /* AIModelConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIModelConfig.swift; sourceTree = "<group>"; };
+		3FB7AC35F7676A09FAE34D80 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		441E1D7337EB4DACDB593BBE /* QRInviteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRInviteView.swift; sourceTree = "<group>"; };
+		4B496EA313056D88998FD753 /* EditReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditReportView.swift; sourceTree = "<group>"; };
+		4CAB730FB203ACAC6463C32C /* SWLoading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SWLoading.swift; sourceTree = "<group>"; };
+		5525178E0299A718840F0226 /* SWComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SWComponents.swift; sourceTree = "<group>"; };
+		6A187FCD778E425D8D9B7D8E /* MarkdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownView.swift; sourceTree = "<group>"; };
+		59FAFFC15CA55EB9A6AA042E /* MedicalCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicalCase.swift; sourceTree = "<group>"; };
+		608ACC1843AA65819DF52163 /* AddCaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCaseView.swift; sourceTree = "<group>"; };
+		66D85BAD8C4F21D7F1490071 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		6B64F9AB652E60C68860F99F /* FamilyGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyGroup.swift; sourceTree = "<group>"; };
+		737D625C85C187AA720CADEA /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		769E649837AB088F6097DFD7 /* LocalAIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIService.swift; sourceTree = "<group>"; };
+		7B6088B4FB02E8AD09FB5D03 /* QRScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScannerView.swift; sourceTree = "<group>"; };
+		7EC256FE648C88F748577CD6 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		81CD507F611063A1FD0E7285 /* SWStepper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SWStepper.swift; sourceTree = "<group>"; };
+		827FA29813DF7FC533C47A57 /* RemoteServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteServices.swift; sourceTree = "<group>"; };
+		8ADFD2577F67AE810E1A26C4 /* RecordsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsView.swift; sourceTree = "<group>"; };
+		8AF467CABE1781936179D447 /* AIChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIChatViewModel.swift; sourceTree = "<group>"; };
+		8B0311508079651AE637B50F /* ReportDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportDetailView.swift; sourceTree = "<group>"; };
+		8B2AE8E53BC69C94620A5BE3 /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
+		3C67C92AA9E64D3A8223BE28 /* TextExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextExtractor.swift; sourceTree = "<group>"; };
+		8E374ED52155D0E527C9BC21 /* LocalAuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAuthService.swift; sourceTree = "<group>"; };
+		90DB2B8F3E97FC035B32BD75 /* HealthReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthReport.swift; sourceTree = "<group>"; };
+		981CFA5ACF871A3DA9E9D1CC /* AIChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIChatView.swift; sourceTree = "<group>"; };
+		99C31FBD5AB3ABB6DAA26023 /* ServiceProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceProtocols.swift; sourceTree = "<group>"; };
+		A6D0EA8BE9FC1389B6D41D81 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		ACE8F01F126B067DFDB31557 /* LocalCaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalCaseService.swift; sourceTree = "<group>"; };
+		AE14140F52E38AE28C40CB39 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		B0E537C26CDC9EE2D34E034A /* UploadReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadReportView.swift; sourceTree = "<group>"; };
+		B43883EA426A1CDB788C945F /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
+		B49CFAF31F4FE6BD02E444BB /* ServiceContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceContainer.swift; sourceTree = "<group>"; };
+		BC559FD8173481B63F0DF4CF /* LocalFamilyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFamilyService.swift; sourceTree = "<group>"; };
+		C0B36FF8827469C41B72DAE0 /* FamilyHealth.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FamilyHealth.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C3D859F3F049441392947943 /* AIChatListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIChatListView.swift; sourceTree = "<group>"; };
+		CC7FA88D76849D79C830AC20 /* FamilyListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyListView.swift; sourceTree = "<group>"; };
+		CE35791CEDFDBEA11A4F2A94 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		CF316F12DCFE7656B95A49DB /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
+		CF5A31026D27E7BE59A211FA /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		DED2F08D042ACC666E07A5B8 /* SWAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SWAlert.swift; sourceTree = "<group>"; };
+		E198161FF61448D0CB8B2A95 /* SWShimmer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SWShimmer.swift; sourceTree = "<group>"; };
+		E3E458836CDA2F874CF5ADCF /* LocalReportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalReportService.swift; sourceTree = "<group>"; };
+		E40CB71E9B1A070E23B60196 /* OpenAIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIClient.swift; sourceTree = "<group>"; };
+		E4538966094192A67E6AFC4C /* ChatConversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatConversation.swift; sourceTree = "<group>"; };
+		EBC2586C409B2DD947A44306 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		06DEC8314FF8591848A6D72E /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				CF316F12DCFE7656B95A49DB /* DesignSystem.swift */,
+				DED2F08D042ACC666E07A5B8 /* SWAlert.swift */,
+				5525178E0299A718840F0226 /* SWComponents.swift */,
+				6A187FCD778E425D8D9B7D8E /* MarkdownView.swift */,
+				4CAB730FB203ACAC6463C32C /* SWLoading.swift */,
+				E198161FF61448D0CB8B2A95 /* SWShimmer.swift */,
+				81CD507F611063A1FD0E7285 /* SWStepper.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		086717999FA98D30FBF18C1A /* AI */ = {
+			isa = PBXGroup;
+			children = (
+				769E649837AB088F6097DFD7 /* LocalAIService.swift */,
+				E40CB71E9B1A070E23B60196 /* OpenAIClient.swift */,
+			);
+			path = AI;
+			sourceTree = "<group>";
+		};
+		0EBB734B805E27DD47F2F3DC /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				CE35791CEDFDBEA11A4F2A94 /* LoginView.swift */,
+				3FB7AC35F7676A09FAE34D80 /* OnboardingView.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		1F9D54339BCF6D1ADACD8152 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				7EC256FE648C88F748577CD6 /* AppState.swift */,
+				1447C8418AC2486F8A3A479B /* Assets.xcassets */,
+				14A9060B820FF1C0912492B7 /* FamilyHealthApp.swift */,
+				B49CFAF31F4FE6BD02E444BB /* ServiceContainer.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		2BB5BBBB4F2FC2D5D1E1DB15 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				1ACEA59F7CF933452663FDC4 /* Localizable.strings */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		3B0FE3E6C7B1A6EC3C228FB3 /* Remote */ = {
+			isa = PBXGroup;
+			children = (
+				AE14140F52E38AE28C40CB39 /* APIClient.swift */,
+				827FA29813DF7FC533C47A57 /* RemoteServices.swift */,
+			);
+			path = Remote;
+			sourceTree = "<group>";
+		};
+		4E1F43108B5E3570E12B90A3 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A6D0EA8BE9FC1389B6D41D81 /* MainTabView.swift */,
+				297FAFF411A24D61DB139F53 /* RootView.swift */,
+				D422F2F39113912EBC12D0B3 /* AI */,
+				06DEC8314FF8591848A6D72E /* Components */,
+				C32AAB80E9975D9932D8C583 /* Family */,
+				C8D0BE5DBB1164EDF1A4F5FF /* Home */,
+				0EBB734B805E27DD47F2F3DC /* Onboarding */,
+				F5AC08D7E931D921223F26BF /* Records */,
+				DA002AC816BD640A0D06C53C /* Settings */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		6D31D96176CDC038A75A0C1E /* FamilyHealth */ = {
+			isa = PBXGroup;
+			children = (
+				1F9D54339BCF6D1ADACD8152 /* App */,
+				77DA54F5C32A2747021E3CDA /* Models */,
+				2BB5BBBB4F2FC2D5D1E1DB15 /* Resources */,
+				E22F2076C9C96E3DFA5C5E0A /* Services */,
+				7336B62C0AACCB79EAC0C509 /* Utilities */,
+				A4BBB4797B060FD6808FAC72 /* ViewModels */,
+				4E1F43108B5E3570E12B90A3 /* Views */,
+			);
+			path = FamilyHealth;
+			sourceTree = "<group>";
+		};
+		7336B62C0AACCB79EAC0C509 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				8B2AE8E53BC69C94620A5BE3 /* KeychainManager.swift */,
+				3C67C92AA9E64D3A8223BE28 /* TextExtractor.swift */,
+				2CB5DB2D83D5BE5954669D17 /* QRCodeGenerator.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		77DA54F5C32A2747021E3CDA /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				35CB86173588BB1921FDB189 /* AIModelConfig.swift */,
+				E4538966094192A67E6AFC4C /* ChatConversation.swift */,
+				6B64F9AB652E60C68860F99F /* FamilyGroup.swift */,
+				90DB2B8F3E97FC035B32BD75 /* HealthReport.swift */,
+				59FAFFC15CA55EB9A6AA042E /* MedicalCase.swift */,
+				EBC2586C409B2DD947A44306 /* User.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		802FCC81504A7A8B9B54261A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C0B36FF8827469C41B72DAE0 /* FamilyHealth.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		81EB9D19DC40763D7FD55041 /* Local */ = {
+			isa = PBXGroup;
+			children = (
+				8E374ED52155D0E527C9BC21 /* LocalAuthService.swift */,
+				ACE8F01F126B067DFDB31557 /* LocalCaseService.swift */,
+				BC559FD8173481B63F0DF4CF /* LocalFamilyService.swift */,
+				E3E458836CDA2F874CF5ADCF /* LocalReportService.swift */,
+			);
+			path = Local;
+			sourceTree = "<group>";
+		};
+		A4BBB4797B060FD6808FAC72 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				8AF467CABE1781936179D447 /* AIChatViewModel.swift */,
+				B43883EA426A1CDB788C945F /* HomeViewModel.swift */,
+				154D57CE075DEA26B032A486 /* RecordsViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		AAF5FD11D88A1F71A754DECC = {
+			isa = PBXGroup;
+			children = (
+				6D31D96176CDC038A75A0C1E /* FamilyHealth */,
+				802FCC81504A7A8B9B54261A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B32AF4110BDA2B1EE5F29446 /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				99C31FBD5AB3ABB6DAA26023 /* ServiceProtocols.swift */,
+			);
+			path = Protocols;
+			sourceTree = "<group>";
+		};
+		C32AAB80E9975D9932D8C583 /* Family */ = {
+			isa = PBXGroup;
+			children = (
+				CC7FA88D76849D79C830AC20 /* FamilyListView.swift */,
+				441E1D7337EB4DACDB593BBE /* QRInviteView.swift */,
+				7B6088B4FB02E8AD09FB5D03 /* QRScannerView.swift */,
+			);
+			path = Family;
+			sourceTree = "<group>";
+		};
+		C8D0BE5DBB1164EDF1A4F5FF /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				737D625C85C187AA720CADEA /* HomeView.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		D422F2F39113912EBC12D0B3 /* AI */ = {
+			isa = PBXGroup;
+			children = (
+				C3D859F3F049441392947943 /* AIChatListView.swift */,
+				981CFA5ACF871A3DA9E9D1CC /* AIChatView.swift */,
+			);
+			path = AI;
+			sourceTree = "<group>";
+		};
+		DA002AC816BD640A0D06C53C /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				02F3D01A3BB55627DBB1D3E9 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		E22F2076C9C96E3DFA5C5E0A /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				086717999FA98D30FBF18C1A /* AI */,
+				81EB9D19DC40763D7FD55041 /* Local */,
+				B32AF4110BDA2B1EE5F29446 /* Protocols */,
+				3B0FE3E6C7B1A6EC3C228FB3 /* Remote */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		F5AC08D7E931D921223F26BF /* Records */ = {
+			isa = PBXGroup;
+			children = (
+				608ACC1843AA65819DF52163 /* AddCaseView.swift */,
+				143652190B4AA6C922C5967E /* CaseDetailView.swift */,
+				4B496EA313056D88998FD753 /* EditReportView.swift */,
+				8ADFD2577F67AE810E1A26C4 /* RecordsView.swift */,
+				8B0311508079651AE637B50F /* ReportDetailView.swift */,
+				B0E537C26CDC9EE2D34E034A /* UploadReportView.swift */,
+			);
+			path = Records;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B69A593BEF3235F6B05347D2 /* FamilyHealth */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E0FE8C27CC4063BD92DB99C0 /* Build configuration list for PBXNativeTarget "FamilyHealth" */;
+			buildPhases = (
+				7F119C26BD786A68982906F9 /* Sources */,
+				C5B82D37C7CB846CB2097FE8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FamilyHealth;
+			packageProductDependencies = (
+			);
+			productName = FamilyHealth;
+			productReference = C0B36FF8827469C41B72DAE0 /* FamilyHealth.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		56C214F50746AE89BB9F6A01 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+			};
+			buildConfigurationList = 1432F6C31E848EE89FB9758D /* Build configuration list for PBXProject "FamilyHealth" */;
+			developmentRegion = "zh-Hans";
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+				"zh-Hans",
+			);
+			mainGroup = AAF5FD11D88A1F71A754DECC;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 802FCC81504A7A8B9B54261A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B69A593BEF3235F6B05347D2 /* FamilyHealth */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C5B82D37C7CB846CB2097FE8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C4E2EC76A7C4B9346D32050B /* Localizable.strings in Resources */,
+				47F93B10FC494642B5853D8D /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7F119C26BD786A68982906F9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DA215046DD14B6DAC8B08095 /* AIChatListView.swift in Sources */,
+				300A15D0D7575334F431D316 /* AIChatView.swift in Sources */,
+				BD742930DD96D8D29671F7FF /* AIChatViewModel.swift in Sources */,
+				440066F2A1A5B292461BEF41 /* AIModelConfig.swift in Sources */,
+				8BF7440C76DF5F4C22CCE9F8 /* APIClient.swift in Sources */,
+				9351270A26159AFFA843F863 /* AddCaseView.swift in Sources */,
+				A359D3F2A16DB92C3E13CF85 /* AppState.swift in Sources */,
+				4F306C207F582D368ABEBA1B /* CaseDetailView.swift in Sources */,
+				E40744D3355EED321583E681 /* ChatConversation.swift in Sources */,
+				BB3932531BF17D74F78512BB /* DesignSystem.swift in Sources */,
+				F5F38793A47662638F191C0D /* EditReportView.swift in Sources */,
+				54E9D0F621B7D59A53857D9A /* FamilyGroup.swift in Sources */,
+				DD7C1362E363DAB760B5E23D /* FamilyHealthApp.swift in Sources */,
+				AE94965B245AD6BA496055AE /* FamilyListView.swift in Sources */,
+				1C202837C385CDEEE3F807B4 /* HealthReport.swift in Sources */,
+				67C8851DCB6A88D49380AC90 /* HomeView.swift in Sources */,
+				057927F4DD8B9EAA56287A11 /* HomeViewModel.swift in Sources */,
+				856A2911A6F0F01D272C9A9A /* KeychainManager.swift in Sources */,
+				62DDD6AD03384429A1354F14 /* TextExtractor.swift in Sources */,
+				E0A3C592E1E4DB5C7AB27AA4 /* LocalAIService.swift in Sources */,
+				D8DF3CCF8AA004D609E94759 /* LocalAuthService.swift in Sources */,
+				4CF3E5D8C2E863568EAE7774 /* LocalCaseService.swift in Sources */,
+				C64E7B2C9BBE99431FD376D7 /* LocalFamilyService.swift in Sources */,
+				53E7DF1AEC1ED047955859A0 /* LocalReportService.swift in Sources */,
+				ACECB0F6FC0465411CF0B1A8 /* LoginView.swift in Sources */,
+				6698B671E1961AE5AF3B4C1F /* MainTabView.swift in Sources */,
+				297039BB193274A163A92ED7 /* MedicalCase.swift in Sources */,
+				99720E06E017DE91CB9E4E5D /* OnboardingView.swift in Sources */,
+				30B7F2C5BC27BDEEE872E550 /* OpenAIClient.swift in Sources */,
+				9DD6828903410CCBE02C9485 /* QRCodeGenerator.swift in Sources */,
+				3A5E23887E80A68043247BFF /* QRInviteView.swift in Sources */,
+				DA8A23F47D8BCEFB956843DA /* QRScannerView.swift in Sources */,
+				DD9D02DBC3D4F13DE28B0AE6 /* RecordsView.swift in Sources */,
+				97F9AD342F074873E350F22D /* RecordsViewModel.swift in Sources */,
+				34188312F1D1636FAA67DB8A /* RemoteServices.swift in Sources */,
+				9D8E4F15D2CA334390627BB2 /* ReportDetailView.swift in Sources */,
+				2A93E43B98E20581B729C902 /* RootView.swift in Sources */,
+				0A6197B55BBB28866131E1B4 /* SWAlert.swift in Sources */,
+				3F3BE59B34BD7D73DA99334C /* SWComponents.swift in Sources */,
+				B4ED937C62EF4C23B274582C /* MarkdownView.swift in Sources */,
+				6C278FC95C5B4628FA471982 /* SWLoading.swift in Sources */,
+				50AFFF8C7747ADF7E7DE2DE0 /* SWShimmer.swift in Sources */,
+				016B22695245F8C5C0816F62 /* SWStepper.swift in Sources */,
+				24DFED3FF107C215C3C0233B /* ServiceContainer.swift in Sources */,
+				B711295983399617BE853BF5 /* ServiceProtocols.swift in Sources */,
+				8F3CBC4683D1CFF43FD8F935 /* SettingsView.swift in Sources */,
+				B813DF145E0C1ADD319DEEFF /* UploadReportView.swift in Sources */,
+				1832288F069F7594E32D6D7F /* User.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		1ACEA59F7CF933452663FDC4 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				66D85BAD8C4F21D7F1490071 /* en */,
+				CF5A31026D27E7BE59A211FA /* zh-Hans */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		104FC1BB9B9450F855A755A6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = PRHS3BP7TJ;
+				INFOPLIST_KEY_NSCameraUsageDescription = "用于扫描二维码和拍摄体检报告";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "用于选择体检报告图片";
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.familyhealth.app;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		68FDE9C8F4CFF469B5BCF976 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = FamilyHealth;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		7DB39FEC7F5FB7D685F1C01E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = PRHS3BP7TJ;
+				INFOPLIST_KEY_NSCameraUsageDescription = "用于扫描二维码和拍摄体检报告";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "用于选择体检报告图片";
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.familyhealth.app;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		A30485C7F3AAD404382A7BA9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = FamilyHealth;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1432F6C31E848EE89FB9758D /* Build configuration list for PBXProject "FamilyHealth" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A30485C7F3AAD404382A7BA9 /* Debug */,
+				68FDE9C8F4CFF469B5BCF976 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E0FE8C27CC4063BD92DB99C0 /* Build configuration list for PBXNativeTarget "FamilyHealth" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				104FC1BB9B9450F855A755A6 /* Debug */,
+				7DB39FEC7F5FB7D685F1C01E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 56C214F50746AE89BB9F6A01 /* Project object */;
+}
