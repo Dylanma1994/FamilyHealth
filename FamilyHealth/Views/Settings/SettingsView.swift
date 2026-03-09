@@ -3,6 +3,12 @@ import SwiftData
 
 struct SettingsView: View {
     @EnvironmentObject private var appState: AppState
+    @Query private var allUsers: [User]
+
+    private var currentUser: User? {
+        guard let id = appState.currentUserId, let uuid = UUID(uuidString: id) else { return nil }
+        return allUsers.first(where: { $0.id == uuid })
+    }
 
     var body: some View {
         NavigationStack {
@@ -21,15 +27,23 @@ struct SettingsView: View {
                             .fhShadow(.light)
 
                         VStack(alignment: .leading, spacing: FHSpacing.xs) {
-                            Text("用户")
+                            Text(currentUser?.name ?? "用户")
                                 .font(.title3.bold())
-                            Text(appState.mode.displayName)
-                                .font(.caption)
-                                .padding(.horizontal, FHSpacing.sm)
-                                .padding(.vertical, 2)
-                                .background(FHColors.success.opacity(0.1))
-                                .foregroundStyle(FHColors.success)
-                                .clipShape(Capsule())
+                            HStack(spacing: 4) {
+                                if let user = currentUser {
+                                    Text(user.gender == .male ? "♂" : "♀")
+                                    Text(user.phone)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                                Text(appState.mode.displayName)
+                                    .font(.caption)
+                                    .padding(.horizontal, FHSpacing.sm)
+                                    .padding(.vertical, 2)
+                                    .background(FHColors.success.opacity(0.1))
+                                    .foregroundStyle(FHColors.success)
+                                    .clipShape(Capsule())
+                            }
                         }
                     }
                     .padding(.vertical, FHSpacing.xs)
@@ -38,7 +52,7 @@ struct SettingsView: View {
                 // Account
                 Section("账户") {
                     NavigationLink {
-                        Text("个人资料") // TODO: ProfileEditView
+                        ProfileEditView()
                     } label: {
                         Label("个人资料", systemImage: "person.circle")
                     }
@@ -406,5 +420,119 @@ struct AddAIModelView: View {
         try? context.save()
 
         dismiss()
+    }
+}
+
+// MARK: - Profile Edit
+
+struct ProfileEditView: View {
+    @EnvironmentObject private var appState: AppState
+    @Environment(\.modelContext) private var context
+    @Environment(\.dismiss) private var dismiss
+    @Query private var allUsers: [User]
+    @State private var name = ""
+    @State private var gender: User.Gender = .male
+    @State private var birthDate: Date = Date()
+    @State private var hasBirthDate = false
+    @State private var heightCm: String = ""
+    @State private var weightKg: String = ""
+    @State private var showAlert = false
+    @State private var alertMessage = ""
+
+    private var currentUser: User? {
+        guard let id = appState.currentUserId, let uuid = UUID(uuidString: id) else { return nil }
+        return allUsers.first(where: { $0.id == uuid })
+    }
+
+    private var bmi: String? {
+        guard let h = Double(heightCm), let w = Double(weightKg), h > 0 else { return nil }
+        let bmiVal = w / ((h / 100) * (h / 100))
+        return String(format: "%.1f", bmiVal)
+    }
+
+    var body: some View {
+        Form {
+            Section("基本信息") {
+                TextField("姓名", text: $name)
+                Picker("性别", selection: $gender) {
+                    ForEach(User.Gender.allCases, id: \.self) { g in
+                        Text(g.displayName).tag(g)
+                    }
+                }
+            }
+
+            Section("出生日期") {
+                Toggle("设置出生日期", isOn: $hasBirthDate)
+                if hasBirthDate {
+                    DatePicker("出生日期", selection: $birthDate, displayedComponents: .date)
+                }
+            }
+
+            Section {
+                HStack {
+                    Text("身高 (cm)")
+                    Spacer()
+                    TextField("170", text: $heightCm)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 80)
+                }
+                HStack {
+                    Text("体重 (kg)")
+                    Spacer()
+                    TextField("65", text: $weightKg)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 80)
+                }
+                if let bmi = bmi {
+                    HStack {
+                        Text("BMI")
+                        Spacer()
+                        Text(bmi)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            } header: {
+                Text("身体数据")
+            }
+        }
+        .navigationTitle("个人资料")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                Button("保存") { saveProfile() }
+                    .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
+            }
+        }
+        .onAppear { loadUser() }
+        .swAlert(isPresented: $showAlert, type: .success, message: alertMessage)
+    }
+
+    private func loadUser() {
+        guard let user = currentUser else { return }
+        name = user.name
+        gender = user.gender
+        if let bd = user.birthDate {
+            birthDate = bd
+            hasBirthDate = true
+        }
+        if let h = user.height { heightCm = String(format: "%.0f", h) }
+        if let w = user.weight { weightKg = String(format: "%.1f", w) }
+    }
+
+    private func saveProfile() {
+        guard let user = currentUser else { return }
+        user.name = name.trimmingCharacters(in: .whitespaces)
+        user.gender = gender
+        user.birthDate = hasBirthDate ? birthDate : nil
+        user.height = Double(heightCm)
+        user.weight = Double(weightKg)
+        user.updatedAt = Date()
+        try? context.save()
+
+        alertMessage = "已保存"
+        showAlert = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { dismiss() }
     }
 }

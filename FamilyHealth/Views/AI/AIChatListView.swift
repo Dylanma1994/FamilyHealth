@@ -7,6 +7,12 @@ struct AIChatListView: View {
     @Query private var aiConfigs: [AIModelConfig]
     @Environment(\.modelContext) private var context
 
+    @State private var conversationToDelete: ChatConversation?
+    @State private var conversationToRename: ChatConversation?
+    @State private var renameText = ""
+    @State private var showRenameAlert = false
+    @State private var showDeleteConfirm = false
+
     private var hasAIConfig: Bool { !aiConfigs.isEmpty }
 
     var body: some View {
@@ -31,6 +37,27 @@ struct AIChatListView: View {
                         }
                     }
                 }
+            }
+            .alert("重命名对话", isPresented: $showRenameAlert) {
+                TextField("对话标题", text: $renameText)
+                Button("确定") {
+                    if let conv = conversationToRename {
+                        conv.title = renameText.trimmingCharacters(in: .whitespaces)
+                        conv.updatedAt = Date()
+                        try? context.save()
+                    }
+                }
+                Button("取消", role: .cancel) {}
+            }
+            .confirmationDialog("确认删除", isPresented: $showDeleteConfirm, titleVisibility: .visible) {
+                Button("删除对话", role: .destructive) {
+                    if let conv = conversationToDelete {
+                        context.delete(conv)
+                        try? context.save()
+                    }
+                }
+            } message: {
+                Text("删除后无法恢复，确定要删除这个对话吗？")
             }
         }
     }
@@ -96,22 +123,43 @@ struct AIChatListView: View {
                                     .font(.caption2)
                                     .foregroundStyle(.secondary)
                             }
-                            if let model = conv.modelName {
-                                SWBadge(model, color: FHColors.aiPurple)
+                            if let lastMsg = conv.messages.sorted(by: { $0.createdAt < $1.createdAt }).last {
+                                Text(lastMsg.content.prefix(50) + (lastMsg.content.count > 50 ? "..." : ""))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(1)
+                            } else {
+                                Text("\(conv.messages.count) 条消息")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
                             }
-                            Text("\(conv.messages.count) 条消息")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
                         }
                     }
                     .padding(.vertical, 4)
                 }
-            }
-            .onDelete { indexSet in
-                for index in indexSet {
-                    context.delete(conversations[index])
+                .contextMenu {
+                    Button {
+                        conversationToRename = conv
+                        renameText = conv.title ?? ""
+                        showRenameAlert = true
+                    } label: {
+                        Label("重命名", systemImage: "pencil")
+                    }
+                    Button(role: .destructive) {
+                        conversationToDelete = conv
+                        showDeleteConfirm = true
+                    } label: {
+                        Label("删除", systemImage: "trash")
+                    }
                 }
-                try? context.save()
+                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                    Button(role: .destructive) {
+                        conversationToDelete = conv
+                        showDeleteConfirm = true
+                    } label: {
+                        Label("删除", systemImage: "trash")
+                    }
+                }
             }
         }
         .listStyle(.plain)

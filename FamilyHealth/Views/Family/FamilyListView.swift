@@ -180,6 +180,8 @@ struct FamilyGroupDetailView: View {
     let group: FamilyGroup
     @EnvironmentObject private var appState: AppState
     @Environment(ServiceContainer.self) private var services
+    @Environment(\.modelContext) private var context
+    @Query private var allUsers: [User]
     @State private var showQRInvite = false
     @State private var showInviteByPhone = false
     @State private var showDeleteConfirm = false
@@ -198,12 +200,39 @@ struct FamilyGroupDetailView: View {
         return group.creatorId == uuid
     }
 
+    private func userName(for userId: UUID) -> String {
+        allUsers.first(where: { $0.id == userId })?.name ?? "用户 \(userId.uuidString.prefix(6))"
+    }
+
     var body: some View {
         List {
             // Members section
             Section("\(group.members.count) 位成员") {
-                ForEach(group.members) { member in
+                ForEach(group.members.sorted { $0.role == .admin && $1.role != .admin }) { member in
                     memberRow(member)
+                        .contextMenu {
+                            if isAdmin && member.userId != currentUUID {
+                                Button {
+                                    Task { await removeMember(member) }
+                                } label: {
+                                    Label("移除成员", systemImage: "person.badge.minus")
+                                }
+                                Button {
+                                    Task { await transferAdmin(to: member) }
+                                } label: {
+                                    Label("转让管理员", systemImage: "person.badge.key")
+                                }
+                            }
+                        }
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            if isAdmin && member.userId != currentUUID {
+                                Button(role: .destructive) {
+                                    Task { await removeMember(member) }
+                                } label: {
+                                    Label("移除", systemImage: "person.badge.minus")
+                                }
+                            }
+                        }
                 }
             }
 
@@ -214,7 +243,7 @@ struct FamilyGroupDetailView: View {
                         NavigationLink {
                             MemberReportsView(memberId: member.userId)
                         } label: {
-                            Label("查看 \(member.userId.uuidString.prefix(8)) 的报告", systemImage: "doc.text")
+                            Label("查看 \(userName(for: member.userId)) 的报告", systemImage: "doc.text")
                         }
                     }
                 }
@@ -261,13 +290,23 @@ struct FamilyGroupDetailView: View {
     }
 
     private func memberRow(_ member: FamilyMember) -> some View {
-        HStack {
-            SWAvatar(name: "U\(member.userId.uuidString.prefix(2))", size: 40,
+        let name = userName(for: member.userId)
+        let isMe = member.userId == currentUUID
+        return HStack {
+            SWAvatar(name: name, size: 40,
                      color: member.role == .admin ? FHColors.primary : FHColors.info)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text("用户 \(member.userId.uuidString.prefix(8))")
-                    .font(.subheadline)
+                HStack(spacing: 4) {
+                    Text(name)
+                        .font(.subheadline)
+                        .fontWeight(isMe ? .semibold : .regular)
+                    if isMe {
+                        Text("(我)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
                 Text("加入于 \(member.joinedAt.formatted(date: .abbreviated, time: .omitted))")
                     .font(.caption2).foregroundStyle(.secondary)
             }
@@ -288,6 +327,36 @@ struct FamilyGroupDetailView: View {
             alertMessage = error.localizedDescription
             showAlert = true
         }
+    }
+
+    private func removeMember(_ member: FamilyMember) async {
+        do {
+            try await services.familyService.removeMember(groupId: group.id, userId: member.userId)
+            alertType = .success
+            alertMessage = "已移除成员"
+            showAlert = true
+        } catch {
+            alertType = .error
+            alertMessage = error.localizedDescription
+            showAlert = true
+        }
+    }
+
+    private func transferAdmin(to member: FamilyMember) async {
+        // Change the new admin's role
+        member.role = .admin
+        // Find current admin and change to member
+        if let currentAdmin = group.members.first(where: { $0.userId == currentUUID }) {
+            currentAdmin.role = .member
+        }
+        // Update group creator
+        group.creatorId = member.userId
+        group.updatedAt = Date()
+        try? context.save()
+
+        alertType = .success
+        alertMessage = "已转让管理员给 \(userName(for: member.userId))"
+        showAlert = true
     }
 
     private func leaveOrDelete() async {
