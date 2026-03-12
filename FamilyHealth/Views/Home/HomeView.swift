@@ -10,7 +10,7 @@ struct HomeView: View {
     @State private var showUploadReport = false
     @State private var showAddCase = false
     @State private var showAIChat = false
-    @State private var showScanner = false
+
 
     var body: some View {
         NavigationStack {
@@ -38,12 +38,7 @@ struct HomeView: View {
                         }
                 }
             }
-            .sheet(isPresented: $showScanner) {
-                QRScannerView { code in
-                    showScanner = false
-                    handleScannedCode(code)
-                }
-            }
+
             .sheet(isPresented: $showAddCase) { AddCaseView() }
         }
     }
@@ -122,9 +117,7 @@ struct HomeView: View {
                 QuickActionButton(icon: "brain.head.profile", title: "AI 对话", color: FHColors.aiPurple) {
                     showAIChat = true
                 }
-                QuickActionButton(icon: "qrcode.viewfinder", title: "扫码加入", color: FHColors.caseOrange) {
-                    showScanner = true
-                }
+
             }
         }
     }
@@ -173,25 +166,6 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - QR Code Handling
-    private func handleScannedCode(_ code: String) {
-        guard let url = URL(string: code),
-              url.scheme == "familyhealth",
-              url.host == "invite",
-              let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-              let groupIdStr = components.queryItems?.first(where: { $0.name == "group" })?.value,
-              let groupId = UUID(uuidString: groupIdStr),
-              let userId = appState.currentUserId,
-              let uuid = UUID(uuidString: userId) else {
-            return
-        }
-        Task {
-            do {
-                try await services.familyService.addMember(
-                    groupId: groupId, userId: uuid, role: .member, invitedBy: uuid)
-            } catch {}
-        }
-    }
 }
 
 // MARK: - Subcomponents
