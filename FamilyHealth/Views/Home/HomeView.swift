@@ -7,6 +7,7 @@ struct HomeView: View {
     @Query(sort: \HealthReport.createdAt, order: .reverse) private var recentReports: [HealthReport]
     @Query(sort: \MedicalCase.createdAt, order: .reverse) private var recentCases: [MedicalCase]
     @Query private var familyMembers: [FamilyMember]
+    @Query(sort: \HealthKitRecord.date, order: .reverse) private var healthRecords: [HealthKitRecord]
     @State private var showUploadReport = false
     @State private var showAddCase = false
     @State private var showAIChat = false
@@ -19,6 +20,10 @@ struct HomeView: View {
                     headerSection
                         .fhStaggerEntrance(index: 0)
                     statsGrid
+                    if !healthRecords.isEmpty {
+                        healthDataCard
+                            .fhStaggerEntrance(index: 2)
+                    }
                     quickActions
                         .fhStaggerEntrance(index: 3)
                     recentSection
@@ -86,6 +91,88 @@ struct HomeView: View {
                 .fhStaggerEntrance(index: 2)
             StatCard(icon: "calendar", title: "上次体检", value: lastCheckupDate, color: FHColors.calendarPurp)
                 .fhStaggerEntrance(index: 2)
+        }
+    }
+
+    // MARK: - Health Data Card
+    private var healthDataCard: some View {
+        VStack(alignment: .leading, spacing: FHSpacing.md) {
+            HStack {
+                SWSectionHeader("健康数据")
+                Spacer()
+                if let lastSync = HealthKitService.shared.lastSyncDate {
+                    Text(lastSync.formatted(date: .abbreviated, time: .shortened))
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                }
+            }
+
+            LazyVGrid(columns: [.init(), .init(), .init()], spacing: FHSpacing.sm) {
+                ForEach(latestHealthMetrics, id: \.category) { metric in
+                    VStack(spacing: 4) {
+                        Image(systemName: metric.categoryIcon)
+                            .font(.caption)
+                            .foregroundStyle(healthColor(for: metric.category))
+                        Text(metric.categoryDisplayName)
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                        Text(formatHealthValue(metric))
+                            .font(.subheadline.bold())
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, FHSpacing.sm)
+                    .background(FHColors.subtleGray)
+                    .clipShape(RoundedRectangle(cornerRadius: FHRadius.medium))
+                }
+            }
+        }
+    }
+
+    /// Get the latest record per category
+    private var latestHealthMetrics: [HealthKitRecord] {
+        var seen = Set<String>()
+        var results: [HealthKitRecord] = []
+        let order = ["steps", "heartRate", "sleep", "bloodOxygen", "weight", "activeEnergy"]
+        // Group by category, take the most recent
+        let byCategory = Dictionary(grouping: healthRecords) { $0.category }
+        for cat in order {
+            if let records = byCategory[cat], let latest = records.first {
+                if seen.insert(cat).inserted {
+                    results.append(latest)
+                }
+            }
+        }
+        return results
+    }
+
+    private func formatHealthValue(_ record: HealthKitRecord) -> String {
+        let v = record.value
+        switch record.category {
+        case "steps", "activeEnergy":
+            return "\(Int(v))\(record.unit)"
+        case "sleep":
+            return String(format: "%.1f\(record.unit)", v)
+        case "bloodOxygen":
+            return String(format: "%.0f%%", v)
+        default:
+            if v == v.rounded() {
+                return "\(Int(v))\(record.unit)"
+            }
+            return String(format: "%.1f\(record.unit)", v)
+        }
+    }
+
+    private func healthColor(for category: String) -> Color {
+        switch category {
+        case "steps": return .green
+        case "heartRate": return .red
+        case "sleep": return .indigo
+        case "bloodOxygen": return .blue
+        case "weight": return .orange
+        case "activeEnergy": return .pink
+        default: return FHColors.primary
         }
     }
 
