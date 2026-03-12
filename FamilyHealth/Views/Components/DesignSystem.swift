@@ -53,11 +53,11 @@ enum FHGradients {
         startPoint: .leading, endPoint: .trailing
     )
 
-    /// Onboarding bg — very subtle
+    /// Onboarding bg — adapts to light/dark mode
     static let onboardingBg = LinearGradient(
         colors: [
-            Color(hue: 0.56, saturation: 0.12, brightness: 0.97),
-            Color(hue: 0.56, saturation: 0.04, brightness: 1.0)
+            Color(.systemBackground),
+            Color(.secondarySystemBackground)
         ],
         startPoint: .top, endPoint: .bottom
     )

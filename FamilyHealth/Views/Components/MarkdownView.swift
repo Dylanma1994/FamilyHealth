@@ -40,12 +40,28 @@ struct MarkdownView: UIViewRepresentable {
         <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
         <style>
+            :root {
+                --text-color: #000;
+                --secondary-text: rgba(60,60,67,0.6);
+                --bg-fill: rgba(120,120,128,0.12);
+                --separator: rgba(60,60,67,0.18);
+                --link-color: #007AFF;
+            }
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    --text-color: #fff;
+                    --secondary-text: rgba(235,235,245,0.6);
+                    --bg-fill: rgba(120,120,128,0.24);
+                    --separator: rgba(235,235,245,0.18);
+                    --link-color: #0A84FF;
+                }
+            }
             * { margin: 0; padding: 0; box-sizing: border-box; }
             body {
                 font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
                 font-size: \(fontSize)px;
                 line-height: 1.6;
-                color: \(cssColor("label"));
+                color: var(--text-color);
                 background: transparent;
                 padding: 0;
                 word-wrap: break-word;
@@ -63,24 +79,24 @@ struct MarkdownView: UIViewRepresentable {
             code {
                 font-family: 'SF Mono', Menlo, monospace;
                 font-size: 0.9em;
-                background: \(cssColor("tertiarySystemFill"));
+                background: var(--bg-fill);
                 padding: 1px 4px;
                 border-radius: 3px;
             }
             pre {
-                background: \(cssColor("tertiarySystemFill"));
+                background: var(--bg-fill);
                 padding: 8px 10px;
                 border-radius: 6px;
                 margin: 6px 0;
                 overflow-x: auto;
             }
             pre code { background: none; padding: 0; }
-            hr { border: none; border-top: 1px solid \(cssColor("separator")); margin: 8px 0; }
+            hr { border: none; border-top: 1px solid var(--separator); margin: 8px 0; }
             blockquote {
-                border-left: 3px solid \(cssColor("systemBlue"));
+                border-left: 3px solid var(--link-color);
                 padding-left: 10px;
                 margin: 6px 0;
-                color: \(cssColor("secondaryLabel"));
+                color: var(--secondary-text);
             }
             table {
                 border-collapse: collapse;
@@ -89,24 +105,22 @@ struct MarkdownView: UIViewRepresentable {
                 font-size: 0.9em;
             }
             th, td {
-                border: 1px solid \(cssColor("separator"));
+                border: 1px solid var(--separator);
                 padding: 4px 8px;
                 text-align: left;
             }
-            th { background: \(cssColor("tertiarySystemFill")); font-weight: 600; }
-            a { color: \(cssColor("systemBlue")); }
+            th { background: var(--bg-fill); font-weight: 600; }
+            a { color: var(--link-color); }
         </style>
         </head>
         <body>\(htmlBody)</body>
         <script>
-            // Notify Swift of content height after render
             function notifyHeight() {
                 window.webkit.messageHandlers.heightChanged
                     && window.webkit.messageHandlers.heightChanged.postMessage(
                         document.body.scrollHeight
                     );
             }
-            // Use ResizeObserver for accurate sizing
             new ResizeObserver(notifyHeight).observe(document.body);
             notifyHeight();
         </script>
@@ -114,23 +128,7 @@ struct MarkdownView: UIViewRepresentable {
         """
     }
 
-    private func cssColor(_ name: String) -> String {
-        // Use CSS media query for dark mode
-        switch name {
-        case "label":
-            return "color-mix(in srgb, currentColor, currentColor)"
-        case "secondaryLabel":
-            return "rgba(128,128,128,1)"
-        case "separator":
-            return "rgba(128,128,128,0.3)"
-        case "tertiarySystemFill":
-            return "rgba(128,128,128,0.12)"
-        case "systemBlue":
-            return "#007AFF"
-        default:
-            return "inherit"
-        }
-    }
+    // cssColor is no longer needed — replaced with CSS custom properties
 
     // MARK: - Markdown → HTML Converter
 
